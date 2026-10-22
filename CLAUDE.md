@@ -9,6 +9,26 @@ Built for the **Art Hack** track of the **DS+X 2026 hackathon** at Boston Univer
 
 ---
 
+## 0. Start here (every teammate, every Claude Code session)
+
+1. **Environment:** if `.venv/` doesn't exist in the repo root, or the check in
+   `SETUP.md` step 5 hasn't passed on this machine, follow **`SETUP.md`** exactly before
+   writing any code. Python **3.11** only, inside `.venv/`.
+2. **Run Python through the venv:** `.venv/bin/python` (macOS/Linux) or
+   `.venv\Scripts\python.exe` (Windows). Never install packages into the system Python.
+3. **Dependencies:** only what's pinned in `requirements.txt`. Never install
+   `opencv-python` (use `opencv-contrib-python` only; see `SETUP.md`). Ask before adding
+   a package; pin its exact version if approved.
+4. **Stay in your lane:** each person owns the files for their role (section 8). Don't edit
+   another role's files or the interface contracts (section 7) without the team agreeing.
+5. **Git:** `git pull` before starting. Work on a branch named after your role
+   (e.g. `audio`, `firmware`, `content`, `vision`) and open a pull request into `main`.
+   Never commit `.venv/`, `.env` (API keys), or video files.
+6. **Repo status (Oct 21):** folder structure only, no code yet. Repo:
+   https://github.com/bee-0207/open-canvas (private).
+
+---
+
 ## 1. What it does
 
 A user places their hand on a printed painting. An overhead webcam tracks their index
@@ -284,7 +304,8 @@ If EE #2 isn't comfortable in Python, the vision AI + TTS piece moves to the CE.
 ```
 open-canvas/
 ├── CLAUDE.md
-├── requirements.txt
+├── SETUP.md               # dev environment setup (Python 3.11 venv)
+├── requirements.txt       # pinned package versions
 ├── app/
 │   ├── main.py            # main loop: camera → track → lookup → audio + serial
 │   ├── config.yaml        # camera index, serial port, marker IDs, print size, thresholds
@@ -316,8 +337,10 @@ open-canvas/
 
 ## 10. Software stack
 
-- **Python 3.11** (check that the installed MediaPipe version supports it)
-- `opencv-python` ≥ 4.7. ArUco is built in; use the newer `cv2.aruco.ArucoDetector` class.
+- **Python 3.11** (tested 3.11.17). Exact package versions are pinned in `requirements.txt`;
+  setup steps are in `SETUP.md`.
+- `opencv-contrib-python` 5.0 (**not** `opencv-python`; mediapipe depends on the contrib
+  build and the two conflict). ArUco is built in; use the newer `cv2.aruco.ArucoDetector` class.
   Many tutorials use the old `cv2.aruco.detectMarkers`, which is deprecated.
   Dictionary: `DICT_4X4_50`, IDs **0 = top-left, 1 = top-right, 2 = bottom-right,
   3 = bottom-left**.
@@ -381,7 +404,9 @@ Sat noon integrated · Sat evening tested + filmed · Sun polish and submit.
 
 ---
 
-## 13. How to work with Gerson (CE, second-year)
+## 13. How to work with the team
+
+Written for Gerson (CE, second-year); applies to every teammate.
 
 - Lead with the answer. Define jargon the first time it comes up.
 - Show the math and state assumptions for power budgets, specs, and tolerances.

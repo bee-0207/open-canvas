@@ -1,8 +1,13 @@
-# Python 3.11
-opencv-python>=4.7   # ArUco built in (cv2.aruco.ArucoDetector)
-mediapipe            # Tasks API HandLandmarker
-numpy
-sounddevice
-soundfile
-pyserial
-pyyaml               # for app/config.yaml
+# Python 3.11 (tested with 3.11.17)
+# Versions pinned so all four laptops match.
+
+# OpenCV: use ONLY the contrib build. mediapipe depends on it, and installing
+# opencv-python alongside it makes both write into the same cv2 folder.
+# ArUco is built in (cv2.aruco.ArucoDetector).
+opencv-contrib-python==5.0.0.93
+mediapipe==1.1.1          # Tasks API HandLandmarker
+numpy==2.4.6
+sounddevice==0.5.6
+soundfile==0.14.0
+pyserial==3.5
+pyyaml==6.0.3             # for app/config.yaml
