@@ -261,6 +261,9 @@ Chime → music ducks to about 1/3 → voice describes only that spot.
 These boundaries let each person build separately and plug together on Saturday. Don't change
 them without telling the team.
 
+- **Demo machine:** Demo runs on Gerson's Mac (macOS); all audio, TTS, and vision AI code
+  must be tested on macOS.
+
 - **Coordinates:** normalized `(u, v)` in [0, 1], origin at the **top-left** of the image.
 - **Region map:** `content/regions.png`, same resolution as the painting, each pixel value is
   a region ID (0 = background/none). Plus `content/regions.json`:
@@ -290,13 +293,10 @@ them without telling the team.
 
 | Role | Owns |
 |---|---|
-| **CE (Gerson)** | Camera setup, ArUco + homography, MediaPipe fingertip → (u, v), lookup, main loop, serial link on the laptop, final integration |
+| **CE (Gerson)** | Camera setup, ArUco + homography, MediaPipe fingertip → (u, v), lookup, `tools/make_edge_map.py`, main loop, serial link on the laptop, final integration |
 | **EE #1** | Motor driver circuit, ESP32 firmware (motor + debounced button), finger wiring and strain relief, camera mount |
 | **EE #2** | Audio engine (stems, gain/register mixing, panning, object sounds, ducking, chime), vision AI + TTS describe feature, sourcing licensed sounds |
 | **BME** | Painting choice, region map + JSON + overview + descriptions, fingertip motor mount ergonomics, blindfolded user testing, deck/reel update, demo footage |
-
-If EE #2 isn't comfortable in Python, the vision AI + TTS piece moves to the CE.
-
 ---
 
 ## 9. Suggested repo layout
