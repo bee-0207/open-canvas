@@ -1,0 +1,8 @@
+# Python 3.11
+opencv-python>=4.7   # ArUco built in (cv2.aruco.ArucoDetector)
+mediapipe            # Tasks API HandLandmarker
+numpy
+sounddevice
+soundfile
+pyserial
+pyyaml               # for app/config.yaml
