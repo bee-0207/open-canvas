@@ -12,6 +12,7 @@ Per camera frame (~30 Hz):
     5. audio.update(...)        music + object sounds (EE #2's engine, agreed API)
     6. motor on/off             edge flag with hysteresis, sent to the ESP32 only on change
     7. button held >= hold_s    audio.describe(crop around the fingertip)
+       (resting the finger on one region ~2 s also speaks it: handled inside the audio engine)
 
 Window keys:
     d   describe the spot under the finger now (stands in for the arcade button)
@@ -164,7 +165,7 @@ def main():
     if not args.serial:
         print("[serial] no ESP32 port set: motor is simulated, press d to describe")
     motor = EdgeMotor(link, tune["edge_frames"])
-    audio = AudioEngine()
+    audio = AudioEngine(crop_fn=lookup.crop)  # crop_fn feeds the AI describer on hover
     audio.start()
 
     uv = None                    # smoothed (u, v), None = finger lifted / off painting
