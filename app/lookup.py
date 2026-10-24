@@ -52,7 +52,8 @@ class Lookup:
 
         # Prefer the saved edge map (so it can be hand-touched in an image editor);
         # otherwise build it from the region map now. Both are the same function.
-        edges = cv2.imread(os.path.join(content, "edges.png"), cv2.IMREAD_GRAYSCALE)
+        edges_path = os.path.join(content, "edges.png")
+        edges = cv2.imread(edges_path, cv2.IMREAD_GRAYSCALE) if os.path.exists(edges_path) else None
         self.edges = edges > 127 if edges is not None else edge_band(self.regions, band_frac)
         self.crop_frac = crop_frac
 

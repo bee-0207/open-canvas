@@ -129,10 +129,13 @@ Commit and push the four untracked files (see "Repo state"), then start **step 4
 **Thursday (in progress)**
 - [x] 2. `tools/make_markers.py` (printed + cut)
 - [x] 3. `app/markers.py`: live camera test passed (Sat Oct 24)
-- [x] 4. `app/hand.py` + `tools/test_hand.py`: live on the Acer Sat Oct 24, median 6.4 ms / 95th pct 6.6 ms per frame over ~2 min. Next: `main.py` ← resume here. Notes: MediaPipe `HandLandmarker`, landmark 8 = index fingertip.
+- [x] 4. `app/hand.py` + `tools/test_hand.py`: live on the Acer Sat Oct 24, median 6.4 ms / 95th pct 6.6 ms per frame over ~2 min. Notes: MediaPipe `HandLandmarker`, landmark 8 = index fingertip.
   Download the model file `hand_landmarker.task` and keep it in the repo (e.g. `assets/models/`).
   Use VIDEO running mode. **Measure FPS early** (target: fingertip → sound < 100 ms).
 - [ ] 1. Still open with the team: nothing blocking, but confirm everyone has run SETUP.md.
+
+**Sat Oct 24: `app/main.py` runs end to end live** (Acer -> markers -> fingertip -> lookup -> EE #2's audio engine, simulated motor; `d` describe, `o` overview). Also added `app/lookup.py`, `app/serial_link.py`, `app/config.yaml`, `tools/make_edge_map.py`; merged `origin/audio` into `vision`.
+**Next ← resume here:** ESP32 firmware + motor circuit, then run with `--serial`. Print `content/painting.png` at the size passed to main. Tune edge band (trunk/path are almost all edge at 0.02).
 
 **Friday**
 - [ ] 5. `app/lookup.py` + `tools/make_edge_map.py` (fake painting + hand-drawn region map until BME delivers)
