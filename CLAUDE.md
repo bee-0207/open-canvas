@@ -25,8 +25,18 @@ those responsibilities moved to the CE).
 5. **Git:** `git pull` before starting. Work on a branch named after your role
    (e.g. `audio`, `firmware`, `content`, `vision`) and open a pull request into `main`.
    Never commit `.venv/`, `.env` (API keys), or video files.
-6. **Repo status (Oct 21):** folder structure only, no code yet. Repo:
-   https://github.com/bee-0207/open-canvas (private).
+6. **Repo status (Sat Oct 24):** the full pipeline runs live on the demo Mac. Repo:
+   https://github.com/bee-0207/open-canvas (public). Where things are:
+
+   | Need | Go to |
+   |---|---|
+   | Run the whole system | `python -m app.main` (settings in `app/config.yaml`; `--serial <port>` for the Uno/ESP32) |
+   | **Build the motor + button circuit** (EE #2) | **`docs/hardware/README.md`** sections 1–5, schematic in `docs/hardware/schematic.svg` |
+   | **Finger mount + button placement** (BME) | **`docs/hardware/README.md`** sections 6–7 |
+   | Firmware | `firmware/open_canvas_uno/` (Arduino Uno R3, flashed and tested) · `firmware/open_canvas_esp32/` (ESP32 version, in progress). Same serial protocol. |
+   | Test audio without a camera | `python tools/mouse_demo.py` |
+   | Test camera pieces alone | `python -m tools.test_markers`, `python -m tools.test_hand` |
+   | CE progress log + next steps | `PROGRESS.md` |
 
 ---
 
@@ -170,6 +180,12 @@ The ESP32 GPIO can't supply motor current directly, so it switches a transistor.
   across the motor absorbs it. **Leaving it out can kill the transistor or the ESP32.**
 - **Supply:** powering one coin motor from the ESP32 board's 3V3 pin is fine (the onboard
   regulator supplies several hundred mA). Don't run more than one or two motors from it.
+
+> **Oct 24: two boards are being tried in parallel.** The CE built an **Arduino Uno R3**
+> version (motor D9, button D2, motor powered from the Uno's 3.3V pin, **470 Ω** base resistor
+> because Uno pins are 5 V, plus a **10 kΩ base pull-down** so the motor doesn't twitch during
+> reset). Its full build guide is `docs/hardware/README.md`. The ESP32 values below still apply
+> to the ESP32 version. Whichever board passes the bench test first is used for the demo.
 
 ### ESP32 pins (defaults for a classic ESP32 DevKit; confirm for the actual board)
 - **Motor:** GPIO 25 (output)
@@ -391,9 +407,10 @@ open-canvas/
 
 **To do:**
 - [ ] Choose painting and print size; produce region map, JSON, overview, descriptions
-- [ ] Vision pipeline: camera → homography → fingertip (u, v)
-- [ ] Audio engine with fake inputs, then live
-- [ ] ESP32 firmware + motor/button bench test
+- [x] Vision pipeline: camera → homography → fingertip (u, v) (Oct 24, live on the Acer)
+- [x] Audio engine with fake inputs, then live (Oct 24, incl. hover-to-speak)
+- [x] Main loop `app/main.py` end to end, motor simulated (Oct 24)
+- [ ] Motor/button circuit built and bench-tested (`docs/hardware/README.md`); Uno firmware flashed, ESP32 in progress
 - [ ] Camera mount at the computed height
 - [ ] Integration by Saturday noon; blindfolded user testing Saturday afternoon
 - [ ] Update deck and reel to Open Canvas and four-layer design; film real demo

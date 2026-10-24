@@ -1,0 +1,88 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612.000 792.000] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 3192 >>
+stream
+BT /F1 11 Tf 0 g 79.228 740.976 Td (Open Canvas corner markers  -  ArUco DICT_4X4_50, 50 mm, 10 mm border) Tj ET
+1.000 g 79.228 508.535 198.425 198.425 re f
+q [3 3] 0 d 0.5 w 0.600 G 79.228 508.535 198.425 198.425 re S Q
+0.000 g 107.575 536.882 141.732 141.732 re f
+1.000 g 131.197 631.370 23.622 23.622 re f
+1.000 g 178.441 631.370 47.244 23.622 re f
+1.000 g 154.819 607.748 23.622 23.622 re f
+1.000 g 202.063 607.748 23.622 23.622 re f
+1.000 g 178.441 584.126 47.244 23.622 re f
+1.000 g 178.441 560.504 23.622 23.622 re f
+BT /F1 9 Tf 0 g 79.228 494.362 Td (ID 0  -  TOP-LEFT corner) Tj ET
+1.000 g 334.346 508.535 198.425 198.425 re f
+q [3 3] 0 d 0.5 w 0.600 G 334.346 508.535 198.425 198.425 re S Q
+0.000 g 362.693 536.882 141.732 141.732 re f
+1.000 g 386.315 607.748 94.488 23.622 re f
+1.000 g 386.315 584.126 23.622 23.622 re f
+1.000 g 457.181 584.126 23.622 23.622 re f
+1.000 g 386.315 560.504 23.622 23.622 re f
+1.000 g 433.559 560.504 23.622 23.622 re f
+BT /F1 9 Tf 0 g 334.346 494.362 Td (ID 1  -  TOP-RIGHT corner) Tj ET
+1.000 g 334.346 253.417 198.425 198.425 re f
+q [3 3] 0 d 0.5 w 0.600 G 334.346 253.417 198.425 198.425 re S Q
+0.000 g 362.693 281.764 141.732 141.732 re f
+1.000 g 433.559 376.252 47.244 23.622 re f
+1.000 g 433.559 352.630 47.244 23.622 re f
+1.000 g 433.559 329.008 23.622 23.622 re f
+1.000 g 386.315 305.386 47.244 23.622 re f
+1.000 g 457.181 305.386 23.622 23.622 re f
+BT /F1 9 Tf 0 g 334.346 239.244 Td (ID 2  -  BOTTOM-RIGHT corner) Tj ET
+1.000 g 79.228 253.417 198.425 198.425 re f
+q [3 3] 0 d 0.5 w 0.600 G 79.228 253.417 198.425 198.425 re S Q
+0.000 g 107.575 281.764 141.732 141.732 re f
+1.000 g 131.197 376.252 23.622 23.622 re f
+1.000 g 202.063 376.252 23.622 23.622 re f
+1.000 g 131.197 352.630 23.622 23.622 re f
+1.000 g 202.063 352.630 23.622 23.622 re f
+1.000 g 154.819 329.008 23.622 23.622 re f
+1.000 g 154.819 305.386 47.244 23.622 re f
+BT /F1 9 Tf 0 g 79.228 239.244 Td (ID 3  -  BOTTOM-LEFT corner) Tj ET
+0.000 g 79.228 206.646 283.465 4.252 re f
+0.000 g 78.520 210.898 1.417 8.504 re f
+0.000 g 106.866 210.898 1.417 8.504 re f
+0.000 g 135.213 210.898 1.417 8.504 re f
+0.000 g 163.559 210.898 1.417 8.504 re f
+0.000 g 191.906 210.898 1.417 8.504 re f
+0.000 g 220.252 210.898 1.417 8.504 re f
+0.000 g 248.598 210.898 1.417 8.504 re f
+0.000 g 276.945 210.898 1.417 8.504 re f
+0.000 g 305.291 210.898 1.417 8.504 re f
+0.000 g 333.638 210.898 1.417 8.504 re f
+0.000 g 361.984 210.898 1.417 8.504 re f
+BT /F1 8 Tf 0 g 79.228 193.890 Td (This bar must measure exactly 10.0 cm. If not, reprint at 100% / Actual size.) Tj ET
+BT /F1 8 Tf 0 g 79.228 165.543 Td (1. Cut along the dashed lines \(keep the white border; the detector needs it\).) Tj ET
+BT /F1 8 Tf 0 g 79.228 151.370 Td (2. Place each tile diagonally outside its corner of the picture, with the tile's) Tj ET
+BT /F1 8 Tf 0 g 79.228 137.197 Td (   inner corner touching the picture's corner. Tile edges parallel to picture edges.) Tj ET
+BT /F1 8 Tf 0 g 79.228 123.024 Td (3. Rotation of the marker itself doesn't matter. Keep tiles flat; matte paper if possible.) Tj ET
+BT /F1 8 Tf 0 g 79.228 108.850 Td (4. Then the marker-to-picture gap is 10 mm: pass --gap-mm 10 to the test script.) Tj ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000249 00000 n 
+0000000319 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+3563
+%%EOF

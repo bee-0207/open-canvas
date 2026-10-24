@@ -4,7 +4,7 @@
 > ESP32 firmware (`M1`/`M0`, debounced `B1`/`B0`), finger wiring + strain relief, and the
 > camera mount. See CLAUDE.md section 8.
 
-Last updated: **Thu Oct 22, 2026 (night)**. Hackathon: Sat Oct 24 – Sun Oct 25.
+Last updated: **Sat Oct 24, 2026** (marker live test passed). Hackathon: Sat Oct 24 – Sun Oct 25.
 
 ---
 
@@ -112,7 +112,7 @@ Commit and push the four untracked files (see "Repo state"), then start **step 4
 ## Repo state
 
 - Pushed to GitHub (`main`): 3 commits, latest `17bac2e` "Assign edge map to CE and set demo machine".
-- **Not committed yet** (commit after the live test passes):
+- **Committed Sat Oct 24** after the live test passed:
   ```
   app/markers.py
   assets/markers.pdf
@@ -128,11 +128,14 @@ Commit and push the four untracked files (see "Repo state"), then start **step 4
 
 **Thursday (in progress)**
 - [x] 2. `tools/make_markers.py` (printed + cut)
-- [ ] 3. `app/markers.py`: **live camera test** ← resume here
-- [ ] 4. `app/hand.py`: MediaPipe `HandLandmarker`, landmark 8 = index fingertip.
+- [x] 3. `app/markers.py`: live camera test passed (Sat Oct 24)
+- [x] 4. `app/hand.py` + `tools/test_hand.py`: live on the Acer Sat Oct 24, median 6.4 ms / 95th pct 6.6 ms per frame over ~2 min. Notes: MediaPipe `HandLandmarker`, landmark 8 = index fingertip.
   Download the model file `hand_landmarker.task` and keep it in the repo (e.g. `assets/models/`).
   Use VIDEO running mode. **Measure FPS early** (target: fingertip → sound < 100 ms).
 - [ ] 1. Still open with the team: nothing blocking, but confirm everyone has run SETUP.md.
+
+**Sat Oct 24: `app/main.py` runs end to end live** (Acer -> markers -> fingertip -> lookup -> EE #2's audio engine, simulated motor; `d` describe, `o` overview). Also added `app/lookup.py`, `app/serial_link.py`, `app/config.yaml`, `tools/make_edge_map.py`; merged `origin/audio` into `vision`.
+**Next ← resume here:** ESP32 firmware + motor circuit, then run with `--serial`. Print `content/painting.png` at the size passed to main. Tune edge band (trunk/path are almost all edge at 0.02).
 
 **Friday**
 - [ ] 5. `app/lookup.py` + `tools/make_edge_map.py` (fake painting + hand-drawn region map until BME delivers)
@@ -152,6 +155,9 @@ Commit and push the four untracked files (see "Repo state"), then start **step 4
 ---
 
 ## Open risks / things to remember
+
+- **USB dropouts (camera vanishing, once with a Mac freeze) went away after plugging the Acer straight into the Mac** (no hub). Keep it that way for the demo.
+- **Acer webcam = `--camera 0` (1280x720)** when plugged in with the iPhone nearby. OpenCV's numbering does NOT match `system_profiler`'s order (MacBook was 1, iPhone 2). Marker test passed on the Acer (Sat Oct 24).
 
 - **Camera height must be re-derived.** The spec (section 5) assumed 40 mm margins; each marker
   tile adds 70 mm per side. For an A3 print: 560 x 437 mm → camera height ≈ **48 cm**

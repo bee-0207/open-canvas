@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" width="760" height="420">
+  <title>Open Canvas: Uno R3 motor driver and button</title>
+  <rect width="760" height="420" fill="#ffffff"/>
+  <g fill="none" stroke="#1b2330" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="30" y="36" width="120" height="364" rx="6" stroke="#586474"/>
+    <path d="M150 60 H600" stroke="#a8561f"/>
+    <path d="M150 380 H600"/>
+    <path d="M330 60 V122 M314 122 H346 M314 134 H346 M330 134 V200"/>
+    <path d="M392 60 V108 M392 152 V200"/>
+    <circle cx="392" cy="130" r="22"/>
+    <path d="M480 60 V118 M480 142 V200"/>
+    <path d="M466 118 H494"/>
+    <path d="M480 118 L467 142 H493 Z"/>
+    <path d="M330 200 H480"/>
+    <circle cx="382" cy="270" r="30" stroke="#586474"/>
+    <path d="M370 252 V288" stroke-width="3"/>
+    <path d="M370 262 L392 246 V200"/>
+    <path d="M370 278 L392 294 V380"/>
+    <path d="M150 270 H200 l5 -8 l10 16 l10 -16 l10 16 l10 -16 l10 16 l5 -8 H370" stroke="#a8561f"/>
+    <path d="M310 270 V300 l8 5 l-16 10 l16 10 l-16 10 l16 10 l-8 5 V380"/>
+    <path d="M600 60 V204 M584 204 H616"/>
+    <path d="M584 220 Q600 210 616 220"/>
+    <path d="M600 216 V380"/>
+    <path d="M150 330 H196" stroke="#a8561f"/>
+    <circle cx="200" cy="330" r="4"/>
+    <circle cx="248" cy="330" r="4"/>
+    <path d="M203 326 L246 312"/>
+    <path d="M252 330 H262 V380"/>
+  </g>
+  <g fill="#1b2330">
+    <polygon points="392,294 380,291 386,283"/>
+    <circle cx="330" cy="60" r="4"/><circle cx="392" cy="60" r="4"/><circle cx="480" cy="60" r="4"/>
+    <circle cx="392" cy="200" r="4"/><circle cx="310" cy="270" r="4"/>
+    <circle cx="262" cy="380" r="4"/><circle cx="310" cy="380" r="4"/><circle cx="392" cy="380" r="4"/>
+  </g>
+  <g font-family="Menlo, ui-monospace, monospace" font-size="13" fill="#1b2330">
+    <text x="90" y="215" text-anchor="middle" font-size="14">Arduino</text>
+    <text x="90" y="233" text-anchor="middle" font-size="14">Uno R3</text>
+    <text x="142" y="64" text-anchor="end">3.3V</text>
+    <text x="142" y="274" text-anchor="end">D9</text>
+    <text x="142" y="334" text-anchor="end">D2</text>
+    <text x="142" y="384" text-anchor="end">GND</text>
+    <text x="236" y="252" text-anchor="middle" fill="#a8561f">470 Ω</text>
+    <text x="324" y="332">10 kΩ</text>
+    <text x="306" y="132" text-anchor="end">0.1 µF</text>
+    <text x="392" y="135" text-anchor="middle">M</text>
+    <text x="420" y="96">coin motor 3 V</text>
+    <text x="502" y="128">1N5819</text>
+    <text x="502" y="146" fill="#586474">stripe up</text>
+    <text x="422" y="266">2N2222 /</text>
+    <text x="422" y="282">PN2222</text>
+    <text x="400" y="232" fill="#586474">C</text>
+    <text x="352" y="262" fill="#586474">B</text>
+    <text x="400" y="318" fill="#586474">E</text>
+    <text x="626" y="200">+</text>
+    <text x="626" y="222">100 µF</text>
+    <text x="626" y="240" fill="#586474">≥ 10 V</text>
+    <text x="224" y="304" text-anchor="middle">button</text>
+    <text x="224" y="352" text-anchor="middle" fill="#586474">NO · COM</text>
+    <text x="600" y="404" text-anchor="middle" fill="#586474">GND</text>
+  </g>
+</svg>
