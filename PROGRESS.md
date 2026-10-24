@@ -153,6 +153,8 @@ Commit and push the four untracked files (see "Repo state"), then start **step 4
 
 ## Open risks / things to remember
 
+- **Acer webcam = `--camera 0` (1280x720)** when plugged in with the iPhone nearby. OpenCV's numbering does NOT match `system_profiler`'s order (MacBook was 1, iPhone 2). Marker test passed on the Acer (Sat Oct 24).
+
 - **Camera height must be re-derived.** The spec (section 5) assumed 40 mm margins; each marker
   tile adds 70 mm per side. For an A3 print: 560 x 437 mm → camera height ≈ **48 cm**
   (218.5 / tan 24.5°), not 42 cm. Check the LenTok arm reaches it, or use 4 cm markers.
