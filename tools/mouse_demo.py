@@ -10,7 +10,8 @@ window (already a project dependency), so nothing new to install.
 
 Controls
     move over the painting    finger touching that spot (move into the gray panel = lifted)
-    hold left mouse button    arcade button: after 0.3 s -> chime, music ducks, description
+    rest on one area 2 s      hover-to-speak: music ducks and the area is described (ring fills)
+    hold left mouse button    arcade button: after 0.3 s -> description of the spot right away
     SPACE                     describe the spot under the mouse right away
     O                         spoken overview (Layer 1)
     R                         region-map overlay on/off
@@ -69,8 +70,8 @@ def main():
     ap.add_argument("--overview", action="store_true", help="start with the spoken overview")
     a = ap.parse_args()
 
-    audio = E.AudioEngine(content=a.content, sounds=a.sounds, root=REPO)
     lookup = F.FakeLookup(a.content)
+    audio = E.AudioEngine(content=a.content, sounds=a.sounds, root=REPO, crop_fn=lookup.crop)
     if lookup.painting is None:
         sys.exit(f"no painting.png in {a.content}")
 
@@ -133,6 +134,11 @@ def main():
                 cv2.circle(frame, p, 4, (60, 60, 255), -1, cv2.LINE_AA)
                 if btn:
                     cv2.circle(frame, p, 22, (90, 210, 255), 2, cv2.LINE_AA)
+                # Hover-to-speak progress: the ring fills over HOVER_TIME, then turns green.
+                hv = audio.state.get("hover", 0.0)
+                if hv > 0:
+                    col = (110, 220, 110) if hv >= 1.0 else (90, 210, 255)
+                    cv2.ellipse(frame, p, (28, 28), -90, 0, 360 * hv, col, 4, cv2.LINE_AA)
 
             # ---- HUD ----
             s, y0 = audio.state, H + 30
@@ -154,7 +160,7 @@ def main():
                 cv2.rectangle(frame, (x, y0 + 72 - bh), (x + 40, y0 + 72), COLORS.get(k, (200, 200, 200)), -1)
                 text(frame, k, (x, y0 + 92), 0.45, (200, 200, 210))
                 x += 125
-            text(frame, "hold mouse = button   SPACE describe   O overview   R regions   ESC quit",
+            text(frame, "rest 2 s = describe   hold mouse = button   O overview   R regions   ESC quit",
                  (330, H + HUD_H - 10), 0.4, (140, 140, 150))
 
             cv2.imshow(WIN, frame)

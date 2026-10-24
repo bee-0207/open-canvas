@@ -59,7 +59,7 @@ PATH = [
     (35.0, (0.15, 0.30)), (46.5, (0.15, 0.30)),    # tree crown: dark green -> woodwind + cello, leaves
     (46.5, None), (49.0, None),
 ]
-BUTTON = [(37.0, True), (37.7, False)]             # press-and-hold on the tree -> chime + description
+BUTTON = [(37.0, True), (37.7, False)]             # press-and-hold on the tree -> description right away
 
 
 def finger_at(t):

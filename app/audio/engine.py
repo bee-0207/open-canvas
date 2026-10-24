@@ -28,6 +28,11 @@ Agreed API (CLAUDE.md section 7). Don't change it without the team:
 Extras outside the contract: start(), stop(), play_overview(), say(audio, sr), render(seconds).
 The button's hold timing lives in the main loop: the contract calls describe() "on hold".
 
+Hover-to-speak (team request, Oct 24): if the finger rests on one region for HOVER_TIME
+seconds, update() itself starts that region's description, with no chime. The camera
+already tracks the finger, so this needs nothing new from the main loop; describe() on the
+button still works. Pass crop_fn=(u, v) -> crop_image to give the AI describer a crop on hover.
+
 Design rules (CLAUDE.md section 11, "Audio thread"):
 - The audio callback never blocks, never touches files or the network, and never waits on
   a lock. All assets are loaded and resampled up front. The main loop hands over a fresh,
@@ -81,6 +86,10 @@ REGION_DWELL = 0.12   # finger must stay in a new region this long before its so
 LIFT_GRACE = 0.35     # MediaPipe drops frames; wait this long before treating "no finger" as lifted
 CHIME_TO_VOICE = 0.35 # gap between chime and voice; also masks the AI round trip
 AI_TIMEOUT = 8.0      # stay ducked this long waiting for an AI description, then give up
+HOVER_TIME = 2.0      # finger rests on one region this long -> its description plays
+HOVER_REPEAT = 20.0   # don't repeat the same region's description sooner than this
+HOVER_GAP = 0.12      # short pause so the music has ducked before the first word
+USE_CHIME = False     # chime before a button describe(); the team chose speech only
 
 PAN_WIDTH = 0.75      # 1.0 = hard left/right at the painting edges; <1 is easier on headphones
 
@@ -214,7 +223,7 @@ class Control:
 # ----------------------------------------------------------------------------- engine
 class AudioEngine:
     def __init__(self, content=os.path.join(REPO, "content"), sounds=os.path.join(REPO, "assets", "sounds"),
-                 root=REPO, describer=None, verbose=True):
+                 root=REPO, describer=None, crop_fn=None, hover=True, verbose=True):
         """
         content:   folder with regions.json (contract format, CLAUDE.md section 7)
         sounds:    folder with music/<inst>_low.wav + music/<inst>_high.wav, ui/chime.wav,
@@ -224,9 +233,13 @@ class AudioEngine:
                    or None. This is the vision AI + TTS step; it runs on a worker thread, and
                    the chime and ducking cover the wait. If it is None, fails, or returns
                    None, the region's pre-rendered description is spoken instead.
+        crop_fn:   optional function (u, v) -> crop_image, used to feed the describer on hover
+        hover:     speak a region's description after the finger rests on it for HOVER_TIME
         """
         self.verbose = verbose
         self.describer = describer
+        self.crop_fn = crop_fn
+        self.hover = hover
         self.regions = self._load_regions(os.path.join(content, "regions.json"))
 
         # --- Layer 2: music stems ---
@@ -291,6 +304,10 @@ class AudioEngine:
         self._region = 0                   # region whose object sound is playing (after dwell)
         self._rid_now = 0                  # region directly under the finger this frame
         self._cand, self._cand_since = 0, 0.0
+        self._hover_rid, self._hover_since, self._hover_fired = 0, 0.0, False
+        self._last_spoken = {}             # region id -> time its description last played
+        self._now = 0.0                    # time of the last update() (same clock as `now`)
+        self._overview_until = 0.0         # audio-clock time the overview ends (hover waits)
         self.state = {}                    # last update, for HUDs / debugging
         self.underruns = 0
         self.callback_error = None
@@ -323,11 +340,13 @@ class AudioEngine:
     def update(self, u, v, hsl, region_id, finger_present, now=None):
         """Call once per camera frame (contract). `now` is for offline tests only."""
         now = time.monotonic() if now is None else now
+        self._now = now
         if not finger_present:
             if self._last_seen is not None and now - self._last_seen < LIFT_GRACE:
                 return                # brief tracking dropout: keep the last state
             if self._present:         # transition to lifted
                 self._present, self._region, self._cand, self._rid_now = False, 0, 0, 0
+                self._hover_rid, self._hover_fired = 0, False
                 self._ctl = self._lifted_control()
                 self.state = {"lifted": True}
             return
@@ -362,7 +381,27 @@ class AudioEngine:
             music_level=1.0,
         )
         self.state = {"uv": (u, v), "hsl": (h, s, l), "weights": w,
-                      "region": self._region, "region_name": self.region_name(self._region)}
+                      "region": self._region, "region_name": self.region_name(self._region),
+                      "hover": self._update_hover(u, v, now)}
+
+    def _update_hover(self, u, v, now):
+        """Hover-to-speak. Uses the debounced region (self._region), so jitter on a boundary
+        doesn't restart the timer. Returns hover progress 0..1 for HUDs (1 = spoken)."""
+        if not self.hover:
+            return 0.0
+        if self._region != self._hover_rid:            # moved to a new region: restart the timer
+            self._hover_rid, self._hover_since, self._hover_fired = self._region, now, False
+        if self._hover_rid == 0 or self._hover_fired:
+            return 1.0 if self._hover_fired else 0.0
+        progress = min((now - self._hover_since) / HOVER_TIME, 1.0)
+        recent = now - self._last_spoken.get(self._hover_rid, -1e9) < HOVER_REPEAT
+        if progress >= 1.0 and not recent and self.audio_time >= self._overview_until:
+            self._hover_fired = True
+            self._last_spoken[self._hover_rid] = now
+            self._log(f"[audio] hover {HOVER_TIME:.0f} s -> describing {self.region_name(self._hover_rid)}")
+            crop = self.crop_fn(u, v) if self.crop_fn is not None else None
+            self._describe_region(self._hover_rid, crop, chime=False)
+        return progress
 
     def _stop_voice(self):
         self._voice_q.clear()
@@ -376,16 +415,22 @@ class AudioEngine:
             self._log("[audio] no voice/overview.wav")
             return
         self._voice_q.append(clip)
+        self._overview_until = self.audio_time + len(clip) / SR
 
     def describe(self, crop_image):
-        """Layer 4 (contract): chime, duck the bed, then speak about the spot under the finger."""
+        """Layer 4 (contract): duck the bed, then speak about the spot under the finger
+        (with a chime first if USE_CHIME)."""
+        self._last_spoken[self._rid_now] = self._now   # hover won't repeat it right away
+        self._describe_region(self._rid_now, crop_image, chime=USE_CHIME)
+
+    def _describe_region(self, rid, crop_image, chime):
         self._stop_voice()
+        self._overview_until = 0.0          # a description replaces the overview
         self._describe_gen += 1
         gen = self._describe_gen
-        if self.chime_data is not None:
+        if chime and self.chime_data is not None:
             self._chime = OneShot(self.chime_data)
-        gap = np.zeros(int(CHIME_TO_VOICE * SR), np.float32)
-        rid = self._rid_now        # what is under the finger right now, no dwell
+        gap = np.zeros(int((CHIME_TO_VOICE if chime else HOVER_GAP) * SR), np.float32)
         info = self.regions.get(rid, {})
         fallback = self.voice_clips.get(rid)
 
