@@ -2,7 +2,8 @@
 
 An interactive system that lets blind and low-vision people explore a painting by touch.
 Built for the **Art Hack** track of the **DS+X 2026 hackathon** at Boston University
-(Sat Oct 24 – Sun Oct 25, 2026, 24 hours). Team of four: two EE, one CE, one BME.
+(Sat Oct 24 – Sun Oct 25, 2026, 24 hours). Team of three active members: one CE, one EE, one BME (EE #1 was a no-show on Oct 24;
+those responsibilities moved to the CE).
 
 > Track prompt: "Combine creativity and technology to turn an idea into an interactive
 > experience, using generative art, creative AI, or physical computing."
@@ -293,8 +294,8 @@ them without telling the team.
 
 | Role | Owns |
 |---|---|
-| **CE (Gerson)** | Camera setup, ArUco + homography, MediaPipe fingertip → (u, v), lookup, `tools/make_edge_map.py`, main loop, serial link on the laptop, final integration |
-| **EE #1** | Motor driver circuit, ESP32 firmware (motor + debounced button), finger wiring and strain relief, camera mount |
+| **CE (Gerson)** | Camera setup, ArUco + homography, MediaPipe fingertip → (u, v), lookup, `tools/make_edge_map.py`, main loop, serial link on the laptop, final integration. **Also former EE #1 work (as of Oct 24):** motor driver circuit, ESP32 firmware (motor + debounced button, `firmware/`), finger wiring and strain relief, camera mount |
+| ~~EE #1~~ | No-show; all responsibilities moved to CE (Gerson) on Oct 24 |
 | **EE #2** | Audio engine (stems, gain/register mixing, panning, object sounds, ducking, chime), vision AI + TTS describe feature, sourcing licensed sounds |
 | **BME** | Painting choice, region map + JSON + overview + descriptions, fingertip motor mount ergonomics, blindfolded user testing, deck/reel update, demo footage |
 ---
