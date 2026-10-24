@@ -4,7 +4,7 @@
 > ESP32 firmware (`M1`/`M0`, debounced `B1`/`B0`), finger wiring + strain relief, and the
 > camera mount. See CLAUDE.md section 8.
 
-Last updated: **Thu Oct 22, 2026 (night)**. Hackathon: Sat Oct 24 – Sun Oct 25.
+Last updated: **Sat Oct 24, 2026** (marker live test passed). Hackathon: Sat Oct 24 – Sun Oct 25.
 
 ---
 
@@ -112,7 +112,7 @@ Commit and push the four untracked files (see "Repo state"), then start **step 4
 ## Repo state
 
 - Pushed to GitHub (`main`): 3 commits, latest `17bac2e` "Assign edge map to CE and set demo machine".
-- **Not committed yet** (commit after the live test passes):
+- **Committed Sat Oct 24** after the live test passed:
   ```
   app/markers.py
   assets/markers.pdf
@@ -128,8 +128,8 @@ Commit and push the four untracked files (see "Repo state"), then start **step 4
 
 **Thursday (in progress)**
 - [x] 2. `tools/make_markers.py` (printed + cut)
-- [ ] 3. `app/markers.py`: **live camera test** ← resume here
-- [ ] 4. `app/hand.py`: MediaPipe `HandLandmarker`, landmark 8 = index fingertip.
+- [x] 3. `app/markers.py`: live camera test passed (Sat Oct 24)
+- [ ] 4. `app/hand.py` ← resume here: MediaPipe `HandLandmarker`, landmark 8 = index fingertip.
   Download the model file `hand_landmarker.task` and keep it in the repo (e.g. `assets/models/`).
   Use VIDEO running mode. **Measure FPS early** (target: fingertip → sound < 100 ms).
 - [ ] 1. Still open with the team: nothing blocking, but confirm everyone has run SETUP.md.
