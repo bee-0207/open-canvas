@@ -129,7 +129,7 @@ Commit and push the four untracked files (see "Repo state"), then start **step 4
 **Thursday (in progress)**
 - [x] 2. `tools/make_markers.py` (printed + cut)
 - [x] 3. `app/markers.py`: live camera test passed (Sat Oct 24)
-- [ ] 4. `app/hand.py` ← resume here: MediaPipe `HandLandmarker`, landmark 8 = index fingertip.
+- [x] 4. `app/hand.py` + `tools/test_hand.py`: live on the Acer Sat Oct 24, median 6.4 ms / 95th pct 6.6 ms per frame over ~2 min. Next: `main.py` ← resume here. Notes: MediaPipe `HandLandmarker`, landmark 8 = index fingertip.
   Download the model file `hand_landmarker.task` and keep it in the repo (e.g. `assets/models/`).
   Use VIDEO running mode. **Measure FPS early** (target: fingertip → sound < 100 ms).
 - [ ] 1. Still open with the team: nothing blocking, but confirm everyone has run SETUP.md.
@@ -153,6 +153,7 @@ Commit and push the four untracked files (see "Repo state"), then start **step 4
 
 ## Open risks / things to remember
 
+- **USB dropouts (camera vanishing, once with a Mac freeze) went away after plugging the Acer straight into the Mac** (no hub). Keep it that way for the demo.
 - **Acer webcam = `--camera 0` (1280x720)** when plugged in with the iPhone nearby. OpenCV's numbering does NOT match `system_profiler`'s order (MacBook was 1, iPhone 2). Marker test passed on the Acer (Sat Oct 24).
 
 - **Camera height must be re-derived.** The spec (section 5) assumed 40 mm margins; each marker
