@@ -1,0 +1,37 @@
+{
+  "1": {
+    "name": "sky",
+    "sound_file": "assets/sounds/objects/birds.wav",
+    "description": "The sky. It fills the top half of the painting. Deep blue at the very top, lighter blue in the middle, and a soft peach and orange glow where it meets the hills."
+  },
+  "2": {
+    "name": "clouds",
+    "sound_file": "assets/sounds/objects/birds.wav",
+    "description": "Two small white clouds, soft and puffy. One floats near the top of the tree on the left. The other drifts in the upper right corner."
+  },
+  "3": {
+    "name": "sun",
+    "sound_file": "assets/sounds/objects/cicadas.wav",
+    "description": "The setting sun. A glowing orange circle, right of center, half hidden behind the big hill. It is brightest and pale yellow at its center."
+  },
+  "4": {
+    "name": "hills",
+    "sound_file": "assets/sounds/objects/wind.wav",
+    "description": "Blue-green hills that stretch across the whole painting. They are low on the left and rise into a large, rounded hill on the right, where the sun is setting."
+  },
+  "5": {
+    "name": "field",
+    "sound_file": "assets/sounds/objects/crickets.wav",
+    "description": "A yellow-green field that covers the bottom third of the painting, warm and grassy, like late summer."
+  },
+  "6": {
+    "name": "path",
+    "sound_file": "assets/sounds/objects/crickets.wav",
+    "description": "A sandy tan path. It starts wide at the bottom center of the painting and winds up and to the right, getting narrower until it disappears into the hills."
+  },
+  "7": {
+    "name": "tree",
+    "sound_file": "assets/sounds/objects/leaves.wav",
+    "description": "A tall tree on the left side of the painting. A straight brown trunk rises from the field, topped by a big, rounded, dark green crown of leaves shaped like a cloud."
+  }
+}
