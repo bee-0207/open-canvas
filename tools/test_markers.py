@@ -91,12 +91,16 @@ def main():
 
     tracker = MarkerTracker(MarkerLayout(args.width_mm, args.height_mm, args.marker_mm, args.gap_mm))
 
-    cap = cv2.VideoCapture(args.camera)
+    def open_camera():
+        cap = cv2.VideoCapture(args.camera)
+        # Request 720p; macOS may ignore this, so print what we actually got
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        return cap
+
+    cap = open_camera()
     if not cap.isOpened():
         raise SystemExit(f"Couldn't open camera {args.camera}. On macOS, check camera permission for your terminal.")
-    # Request 720p; macOS may ignore this, so print what we actually got
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
     print(f"Camera {args.camera}: {int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))}x{int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))}")
 
     mouse = {"xy": None}
@@ -108,11 +112,24 @@ def main():
     cv2.setMouseCallback("camera", on_mouse)
 
     fps, t_prev = 0.0, time.perf_counter()
+    fail_since = None
     while True:
         ok, frame = cap.read()
         if not ok:
-            print("Frame grab failed (camera disconnected or permission denied)")
-            break
+            # USB webcams drop out briefly (bumped cable, hub hiccup): reopen instead of quitting
+            if fail_since is None:
+                fail_since = time.perf_counter()
+                print("Frame grab failed, trying to reconnect...")
+            if time.perf_counter() - fail_since > 10:
+                print("Camera gone for 10 s (disconnected or permission denied), quitting")
+                break
+            cap.release()
+            time.sleep(0.5)
+            cap = open_camera()
+            continue
+        if fail_since is not None:
+            print("Camera back")
+            fail_since = None
 
         det = tracker.update(frame)
 
