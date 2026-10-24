@@ -12,7 +12,8 @@
   "3": {
     "name": "sun",
     "sound_file": "assets/sounds/objects/cicadas.wav",
-    "description": "The setting sun. A glowing orange circle, right of center, half hidden behind the big hill. It is brightest and pale yellow at its center."
+    "description": "The setting sun. A glowing orange circle, right of center, half hidden behind the big hill. It is brightest and pale yellow at its center.",
+    "gain_db": -6
   },
   "4": {
     "name": "hills",
@@ -26,7 +27,7 @@
   },
   "6": {
     "name": "path",
-    "sound_file": "assets/sounds/objects/crickets.wav",
+    "sound_file": "assets/sounds/objects/footsteps.wav",
     "description": "A sandy tan path. It starts wide at the bottom center of the painting and winds up and to the right, getting narrower until it disappears into the hills."
   },
   "7": {
