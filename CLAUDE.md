@@ -410,13 +410,14 @@ open-canvas/
 - `Sound_Design_Demo.mp4` (~59 s): old beep version, then each of the four layers.
 
 **To do:**
-- [ ] Choose painting and print size; produce region map, JSON, overview, descriptions
+- [x] Paintings: Sunset Hills + library of 3 public-domain paintings with region maps, descriptions, print pack (Oct 24)
 - [x] Vision pipeline: camera → homography → fingertip (u, v) (Oct 24, live on the Acer)
 - [x] Audio engine with fake inputs, then live (Oct 24, incl. hover-to-speak)
 - [x] Main loop `app/main.py` end to end, motor simulated (Oct 24)
 - [x] Motor circuit built and working live with the Uno (Oct 24); describe button dropped (hover-to-speak replaces it)
 - [ ] Camera mount at the computed height
-- [ ] Integration by Saturday noon; blindfolded user testing Saturday afternoon
+- [x] Integration (Oct 24 night): Mac app, Siri launch, painting recognition, all four pages tested live
+- [ ] Blindfolded user testing
 - [ ] Update deck and reel to Open Canvas and four-layer design; film real demo
 - [ ] Re-check the event rules at dsplusx.com before submitting
 - [ ] Stretch (only after core works): "draw mode" where users create their own picture
