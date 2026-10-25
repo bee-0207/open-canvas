@@ -19,6 +19,15 @@ recognizes the new painting from its corner markers.
 Built in 24 hours for the **Art Hack** track of **DS+X 2026** at Boston University
 (Oct 24–25, 2026).
 
+## Video
+
+[![Open Canvas: explainer and live demo (1:42)](docs/media/open_canvas_poster.jpg)](https://github.com/bee-0207/open-canvas/releases/download/v1.0-demo/open_canvas.mp4)
+
+**[Watch the video (1:42, MP4)](https://github.com/bee-0207/open-canvas/releases/download/v1.0-demo/open_canvas.mp4)**: the problem, how Open Canvas
+works on the Sunset Hills painting, then the working prototype with a tester. The intro is
+rendered from code; the music is synthesized in B minor with the app's own instruments
+(harp, strings, choir, cello) and fades out before the app's spoken overview.
+
 ## Paintings
 
 | Painting | Artist | What you can touch |
