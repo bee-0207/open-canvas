@@ -2,6 +2,7 @@
 
 Four DICT_4X4_50 markers (printed by tools/make_markers.py) sit diagonally outside the
 painting's corners: 0 = top-left, 1 = top-right, 2 = bottom-right, 3 = bottom-left.
+Other printed paintings use other IDs (content/library.yaml); pass them as `ids`.
 Each frame, MarkerTracker.update() looks for them. When all four are visible it solves a
 homography H (3x3 matrix) that maps camera pixels to painting coordinates (u, v). When a
 hand hides a marker, it keeps using the last good H (CLAUDE.md section 11).
@@ -48,19 +49,22 @@ class MarkerLayout:
 
 @dataclass
 class Detection:
-    """Result of one MarkerTracker.update() call. Only IDs 0-3 are kept."""
+    """Result of one MarkerTracker.update() call. corners/centers keep only the tracker's IDs;
+    `seen` has every ID in view (used to recognize which painting is on the table)."""
 
+    ids: tuple = CORNER_IDS  # the tracker's 4 IDs: TL, TR, BR, BL
+    seen: set = field(default_factory=set)
     corners: dict = field(default_factory=dict)  # id -> (4, 2) camera px, OpenCV corner order
     centers: dict = field(default_factory=dict)  # id -> (2,) camera px
     updated: bool = False  # True if this frame produced a new homography
 
     @property
     def all_found(self):
-        return all(i in self.corners for i in CORNER_IDS)
+        return all(i in self.corners for i in self.ids)
 
     @property
     def missing(self):
-        return [i for i in CORNER_IDS if i not in self.corners]
+        return [i for i in self.ids if i not in self.corners]
 
 
 def quad_center(quad):
@@ -83,8 +87,9 @@ def quad_center(quad):
 class MarkerTracker:
     """Finds the corner markers each frame and keeps the camera -> (u, v) homography."""
 
-    def __init__(self, layout):
+    def __init__(self, layout, ids=CORNER_IDS):
         self.layout = layout
+        self.ids = tuple(ids)  # TL, TR, BR, BL
 
         params = cv2.aruco.DetectorParameters()
         # Sub-pixel corner refinement: steadier corners -> less jitter in H
@@ -106,12 +111,13 @@ class MarkerTracker:
         gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
         corners, ids, _rejected = self._detector.detectMarkers(gray)
 
-        det = Detection()
+        det = Detection(ids=self.ids)
         if ids is not None:
             for quad, marker_id in zip(corners, ids.flatten()):
                 marker_id = int(marker_id)
-                # Ignore IDs we don't use, and keep only the first copy of a duplicated ID
-                if marker_id in CORNER_IDS and marker_id not in det.corners:
+                det.seen.add(marker_id)
+                # Ignore other paintings' IDs, and keep only the first copy of a duplicated ID
+                if marker_id in self.ids and marker_id not in det.corners:
                     q = quad.reshape(4, 2).astype(np.float64)
                     det.corners[marker_id] = q
                     det.centers[marker_id] = quad_center(q)
@@ -127,7 +133,7 @@ class MarkerTracker:
 
     def _solve(self, det):
         """Homography from the 4 marker centers (camera px) to painting (u, v)."""
-        src = np.array([det.centers[i] for i in CORNER_IDS], dtype=np.float32)
+        src = np.array([det.centers[i] for i in self.ids], dtype=np.float32)
         # Markers taped in the wrong corners make a self-crossing quad. Reject it instead of
         # producing a garbage mapping (the last good H stays in use).
         if not cv2.isContourConvex(src):

@@ -1,0 +1,34 @@
+{
+  "1": {
+    "name": "red square",
+    "description": "The large red square. It fills most of the upper right of the painting and is by far the biggest shape."
+  },
+  "2": {
+    "name": "blue rectangle",
+    "description": "A blue rectangle in the bottom left corner, deep and bright."
+  },
+  "3": {
+    "name": "yellow rectangle",
+    "description": "A small yellow rectangle in the bottom right corner, the smallest block of color in the painting."
+  },
+  "4": {
+    "name": "white rectangle",
+    "description": "A white rectangle in the top left corner, tall and narrow."
+  },
+  "5": {
+    "name": "white rectangle",
+    "description": "A white rectangle on the left side, in the middle, between the top left white block and the blue block below."
+  },
+  "6": {
+    "name": "white rectangle",
+    "description": "A long white rectangle along the bottom, in the middle, under the red square."
+  },
+  "7": {
+    "name": "white rectangle",
+    "description": "A small white rectangle on the right edge, just above the yellow block."
+  },
+  "8": {
+    "name": "black line",
+    "description": "A thick black line. Straight black lines divide the painting into rectangles, crossing only at right angles."
+  }
+}

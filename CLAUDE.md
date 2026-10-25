@@ -31,10 +31,12 @@ those responsibilities moved to the CE).
    | Need | Go to |
    |---|---|
    | Run the whole system | `python -m app.main` (settings in `app/config.yaml`; `--serial <port>` for the Uno/ESP32) |
+   | **Mac app** (demo) | `python tools/make_mac_app.py` builds `~/Applications/Open Canvas.app` (double-click / Spotlight / Siri Shortcut `open -a "Open Canvas"`). Log: `~/Library/Logs/OpenCanvas.log`. Rebuild if the repo moves |
    | **Build the motor circuit** (EE #2) | **`docs/hardware/README.md`** sections 1–5, schematic in `docs/hardware/schematic.svg` (motor works live, Oct 24) |
    | **Finger mount** (BME) | **`docs/hardware/README.md`** section 6 |
    | **Describe button** | **Dropped Oct 24.** Resting the finger still on a region for ~2.5 s speaks it (hover-to-speak in `app/audio/engine.py`); `d` key for testing. Leave D2 unwired. |
    | Firmware | `firmware/open_canvas_uno/` (Arduino Uno R3, flashed and tested) · `firmware/open_canvas_esp32/` (ESP32 version, in progress). Same serial protocol. |
+   | **Painting library** (4 paintings) | `content/library.yaml` + `app/library.py`. Each printed page has its own 4 marker IDs; put a page under the camera and it switches + speaks the overview. Print `assets/print_pack.pdf` (`python -m tools.make_print_pack`). New painting: folder in `content/library/`, entry in the YAML, `tools/make_voices_say.py` (or ElevenLabs) for voices |
    | Test audio without a camera | `python tools/mouse_demo.py` |
    | Test camera pieces alone | `python -m tools.test_markers`, `python -m tools.test_hand` |
    | CE progress log + next steps | `PROGRESS.md` |

@@ -1,0 +1,46 @@
+# The paintings Open Canvas knows (read by app/library.py).
+#
+# Every printed copy of a painting carries its own four ArUco markers, IDs listed in the order
+# top-left, top-right, bottom-right, bottom-left. That is how the camera tells the paintings
+# apart: put a different page under the camera and Open Canvas switches to it and speaks its
+# overview. IDs must be unique across the whole file (DICT_4X4_50 has IDs 0-49).
+#
+# layout:
+#   pack   a page of assets/print_pack.pdf (tools/make_print_pack.py): markers printed on the
+#          page around the painting, sizes computed from the painting's shape (app/library.py)
+#   board  the original Sunset Hills board: cut-out tiles taped outside a sheet, sized by the
+#          print: section of app/config.yaml
+#
+# content: folder with painting.png, regions.png, regions.json, overview.txt
+# voice:   folder with overview.wav + region_<id>.wav (default: <content>/voice)
+
+paintings:
+  - slug: sunset_hills
+    title: Sunset Hills
+    artist: the Open Canvas team
+    content: content
+    voice: assets/sounds/voice
+    prints:
+      - {ids: [0, 1, 2, 3], layout: board}
+      - {ids: [4, 5, 6, 7], layout: pack}
+
+  - slug: great_wave
+    title: The Great Wave off Kanagawa
+    artist: Katsushika Hokusai
+    content: content/library/great_wave
+    prints:
+      - {ids: [8, 9, 10, 11], layout: pack}
+
+  - slug: starry_night
+    title: The Starry Night
+    artist: Vincent van Gogh
+    content: content/library/starry_night
+    prints:
+      - {ids: [12, 13, 14, 15], layout: pack}
+
+  - slug: mondrian
+    title: Composition with Red, Blue and Yellow
+    artist: Piet Mondrian
+    content: content/library/mondrian
+    prints:
+      - {ids: [16, 17, 18, 19], layout: pack}
