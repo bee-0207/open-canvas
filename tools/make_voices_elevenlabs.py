@@ -5,9 +5,12 @@ description (Layer 4 fallback) with ElevenLabs, into assets/sounds/voice/.
     .venv/bin/python tools/make_voices_elevenlabs.py --list            # voices matching --voice, and models
     .venv/bin/python tools/make_voices_elevenlabs.py                   # all clips: overview + every region
     .venv/bin/python tools/make_voices_elevenlabs.py --only region_3   # one clip after a text edit
+    .venv/bin/python tools/make_voices_elevenlabs.py --content content/library/mondrian
+    .venv/bin/python tools/make_voices_elevenlabs.py --all             # main painting + every library painting
 
 Text comes from content/overview.txt and the "description" fields in content/regions.json.
-Output is voice/overview.wav and voice/region_<id>.wav, which the engine loads at start-up.
+Output is voice/overview.wav and voice/region_<id>.wav, which the engine loads at start-up:
+assets/sounds/voice/ for the main painting (content/), <content>/voice/ for a library painting.
 
 Why pre-render: speech is ready the instant the button is held, it works with no internet,
 and every line can be checked before the demo. The live vision AI answer goes through
@@ -57,7 +60,8 @@ def call(key, method, path, body=None):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--content", default=os.path.join(REPO, "content"))
-    ap.add_argument("--out", default=os.path.join(REPO, "assets", "sounds", "voice"))
+    ap.add_argument("--out", help="output folder (default: assets/sounds/voice for content/, else <content>/voice)")
+    ap.add_argument("--all", action="store_true", help="content/ plus every folder in content/library/")
     ap.add_argument("--voice", default="George - Warm", help="voice name prefix in your ElevenLabs library")
     ap.add_argument("--model", default="eleven_v4")
     ap.add_argument("--only", help="one clip: overview or region_<id>")
@@ -78,24 +82,43 @@ def main():
         sys.exit(f"no voice starting with {a.voice!r}; try --list --voice ''")
     vid = match[0]["voice_id"]
 
-    jobs = [("overview", open(os.path.join(a.content, "overview.txt")).read().strip())]
-    regions = json.load(open(os.path.join(a.content, "regions.json")))
-    jobs += [(f"region_{rid}", r["description"]) for rid, r in regions.items()]
-    if a.only:
-        jobs = [j for j in jobs if j[0] == a.only]
-    print(f"voice {match[0]['name']!r}, model {a.model}, "
-          f"{len(jobs)} clips, ~{sum(len(t) for _, t in jobs)} credits")
+    main_content = os.path.join(REPO, "content")
+    if a.all:
+        lib = os.path.join(main_content, "library")
+        folders = [main_content] + [os.path.join(lib, d) for d in sorted(os.listdir(lib))
+                                    if os.path.exists(os.path.join(lib, d, "regions.json"))]
+    else:
+        folders = [os.path.abspath(a.content)]
 
-    os.makedirs(a.out, exist_ok=True)
-    for name, text in jobs:
-        mp3 = call(key, "POST", f"/v1/text-to-speech/{vid}?output_format=mp3_44100_128",
-                   {"text": text, "model_id": a.model, "voice_settings": SETTINGS})
-        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as f:
-            f.write(mp3)
-        out = os.path.join(a.out, f"{name}.wav")
-        subprocess.run(["afconvert", "-f", "WAVE", "-d", "LEI16@48000", "-c", "1", f.name, out], check=True)
-        os.unlink(f.name)
-        print(f"  wrote {os.path.relpath(out, REPO)}")
+    batches = []
+    for content in folders:
+        if a.out and not a.all:
+            out = os.path.abspath(a.out)
+        elif os.path.samefile(content, main_content):
+            out = os.path.join(REPO, "assets", "sounds", "voice")
+        else:
+            out = os.path.join(content, "voice")
+        jobs = [("overview", open(os.path.join(content, "overview.txt")).read().strip())]
+        regions = json.load(open(os.path.join(content, "regions.json")))
+        jobs += [(f"region_{rid}", r["description"]) for rid, r in regions.items() if r.get("description")]
+        if a.only:
+            jobs = [j for j in jobs if j[0] == a.only]
+        batches.append((content, out, jobs))
+    n = sum(len(j) for _, _, j in batches)
+    print(f"voice {match[0]['name']!r}, model {a.model}, {n} clips, "
+          f"~{sum(len(t) for _, _, j in batches for _, t in j)} credits")
+
+    for content, out_dir, jobs in batches:
+        os.makedirs(out_dir, exist_ok=True)
+        for name, text in jobs:
+            mp3 = call(key, "POST", f"/v1/text-to-speech/{vid}?output_format=mp3_44100_128",
+                       {"text": text, "model_id": a.model, "voice_settings": SETTINGS})
+            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as f:
+                f.write(mp3)
+            out = os.path.join(out_dir, f"{name}.wav")
+            subprocess.run(["afconvert", "-f", "WAVE", "-d", "LEI16@48000", "-c", "1", f.name, out], check=True)
+            os.unlink(f.name)
+            print(f"  wrote {os.path.relpath(out, REPO)}")
 
 
 if __name__ == "__main__":
