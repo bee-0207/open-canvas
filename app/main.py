@@ -15,6 +15,10 @@ Per camera frame (~30 Hz):
     8. first touch after welcome_idle_s with no finger on the painting -> spoken overview,
        so a blind visitor never needs the keyboard: they just put a hand on the painting
 
+Painting library (content/library.yaml, app/library.py): each printed page has its own 4
+marker IDs. When a different page appears under the camera, main switches to that painting
+and speaks its overview. Before any page is recognized it asks (aloud) for one.
+
 Window keys:
     d   describe the spot under the finger now
     o   spoken overview of the whole painting (also plays on its own, see step 8)
@@ -23,6 +27,7 @@ Window keys:
 
 import argparse
 import os
+import subprocess
 import time
 
 import cv2
@@ -31,6 +36,7 @@ import yaml
 
 from app.audio.engine import AudioEngine
 from app.hand import HAND_CONNECTIONS, FingertipTracker
+from app.library import Library
 from app.lookup import Lookup
 from app.markers import MarkerLayout, MarkerTracker
 from app.serial_link import NullLink, SerialLink
@@ -64,8 +70,17 @@ class Camera:
     def __init__(self, index, width, height):
         self.index, self.width, self.height = index, width, height
         self.cap = self._open()
+        # On an app's first run macOS shows the camera permission prompt and the first open
+        # fails; keep retrying while the user answers it instead of quitting.
+        for _ in range(30):
+            if self.cap.isOpened():
+                break
+            time.sleep(1.0)
+            self.cap = self._open()
         if not self.cap.isOpened():
-            raise SystemExit(f"Couldn't open camera {index}. On macOS, check camera permission for your terminal.")
+            subprocess.run(["say", "Open Canvas can't use the camera. Check that it is plugged in and allowed."])
+            raise SystemExit(f"Couldn't open camera {index}. On macOS, check camera permission "
+                             f"(System Settings > Privacy & Security > Camera).")
         print(f"[camera] {index}: {int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))}x"
               f"{int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))}")
         self._down_since = None
@@ -148,26 +163,52 @@ def draw_debug(frame, det, markers, tip, painting, state):
     return cv2.resize(out, (out.shape[1] * 2 // 3, out.shape[0] * 2 // 3))
 
 
+def load_print(pr, old_audio):
+    """Switch to one printed painting: its lookup maps, marker tracker and audio engine.
+
+    The audio engine is rebuilt per painting (its regions, object sounds and voice clips all
+    change); building one takes well under 0.1 s, so switching is quick.
+    """
+    if old_audio is not None:
+        old_audio.stop()
+    lookup = Lookup(pr.painting.content)
+    ph, pw = lookup.painting.shape[:2]
+    lw, lh = pr.layout.painting_w_mm, pr.layout.painting_h_mm
+    if abs((lw / lh) / (pw / ph) - 1) > 0.03:
+        print(f"[warn] {pr.painting.slug}: print is {lw:.0f}x{lh:.0f} mm but painting.png is {pw}x{ph} px: "
+              f"different shapes, so (u, v) will be stretched.")
+    markers = MarkerTracker(pr.layout, pr.ids)
+    audio = AudioEngine(content=pr.painting.content, voice=pr.painting.voice,
+                        crop_fn=lookup.crop)  # crop_fn feeds the AI describer on hover
+    audio.start()
+    audio.play_overview()   # the overview starts by naming the painting
+    print(f"[library] now showing {pr.painting.title} ({pr.kind} print, markers {list(pr.ids)})")
+    return lookup, markers, audio
+
+
 def main():
     args, cfg = load_settings()
     tune = cfg["tuning"]
     p = cfg["print"]
 
-    lookup = Lookup()
-    ph, pw = lookup.painting.shape[:2]
-    if abs((args.width_mm / args.height_mm) / (pw / ph) - 1) > 0.03:
-        print(f"[warn] print is {args.width_mm}x{args.height_mm} mm but painting.png is {pw}x{ph} px: "
-              f"different shapes, so (u, v) will be stretched. Print painting.png edge to edge.")
+    board = MarkerLayout(args.width_mm, args.height_mm, p["marker_mm"], p["gap_mm"])
+    library = Library.load(board)
+    print(f"[library] {len(library.prints)} prints: " + ", ".join(
+        f"{pr.painting.slug} {list(pr.ids)}" for pr in library.prints))
 
-    markers = MarkerTracker(MarkerLayout(args.width_mm, args.height_mm, p["marker_mm"], p["gap_mm"]))
     hand = FingertipTracker(min_confidence=tune["min_confidence"])
     cam = Camera(args.camera, cfg["camera"]["width"], cfg["camera"]["height"])
     link = SerialLink(args.serial) if args.serial else NullLink()
     if not args.serial:
         print("[serial] no ESP32 port set: motor is simulated, press d to describe")
     motor = EdgeMotor(link, tune["edge_frames"])
-    audio = AudioEngine(crop_fn=lookup.crop)  # crop_fn feeds the AI describer on hover
-    audio.start()
+
+    # Nothing is loaded until a painting is recognized. Until then this tracker only reports
+    # which marker IDs are in view (Detection.seen); its layout doesn't matter.
+    active, lookup, audio = None, None, None
+    markers = MarkerTracker(library.prints[0].layout, library.prints[0].ids)
+    cand, cand_frames = None, 0  # painting seen but not switched to yet (debounce)
+    t_start, prompted = time.monotonic(), False
 
     uv = None                    # smoothed (u, v), None = finger lifted / off painting
     press_t, fired = None, False  # arcade button state
@@ -179,13 +220,45 @@ def main():
             frame = cam.read()
             if frame is None:
                 # Camera gone: silence the object sounds and the motor until it comes back
-                audio.update(0, 0, (0, 0, 0), 0, False)
+                if audio is not None:
+                    audio.update(0, 0, (0, 0, 0), 0, False)
                 motor.off()
                 if not args.no_window and cv2.waitKey(1) & 0xFF in (ord("q"), 27):
                     break
                 continue
 
             det = markers.update(frame)
+            now = time.monotonic()
+
+            # Which painting is on the table? Switch only after switch_frames frames in a row
+            # agree, so a hand sweeping over the markers can't flip paintings by accident.
+            seen = library.identify(det.seen)
+            if seen is not None and seen is not active:
+                cand_frames = cand_frames + 1 if seen is cand else 1
+                cand = seen
+                if cand_frames >= tune["switch_frames"]:
+                    motor.off()
+                    lookup, markers, audio = load_print(seen, audio)
+                    active, cand, cand_frames, uv = seen, None, 0, None
+                    last_touch = now   # the overview just played; the first touch shouldn't repeat it
+                    continue           # this frame's detection belonged to the old tracker
+            else:
+                cand, cand_frames = None, 0
+
+            if active is None:
+                # No painting recognized yet: tell a blind user what to do, once, after a few seconds
+                if not prompted and now - t_start > tune["prompt_after_s"]:
+                    prompted = True
+                    print("[library] no painting in view yet")
+                    subprocess.Popen(["say", "Open Canvas is ready. Place a painting under the camera."])
+                if not args.no_window:
+                    view = frame.copy()
+                    put_text(view, f"looking for a painting... marker IDs in view: {sorted(det.seen) or 'none'}", (10, 25))
+                    cv2.imshow("Open Canvas", cv2.resize(view, (view.shape[1] * 2 // 3, view.shape[0] * 2 // 3)))
+                    if cv2.waitKey(1) & 0xFF in (ord("q"), 27):
+                        break
+                continue
+
             tip = hand.detect(frame)
 
             # Fingertip -> painting (u, v)
@@ -210,7 +283,6 @@ def main():
                 uv = (a * raw[0] + (1 - a) * uv[0], a * raw[1] + (1 - a) * uv[1])
 
             # Welcome: a new visitor (first touch, or after welcome_idle_s untouched) hears the overview
-            now = time.monotonic()
             if uv is not None:
                 if last_touch is None or now - last_touch >= tune["welcome_idle_s"]:
                     print("[welcome] new visitor -> overview")
@@ -244,7 +316,8 @@ def main():
             t_prev = t
             if args.no_window:
                 continue
-            status = f"{fps:.0f} fps   motor {'ON' if motor.on else 'off'}   d describe  o overview  q quit"
+            status = (f"{fps:.0f} fps   {active.painting.slug}   motor {'ON' if motor.on else 'off'}"
+                      f"   d describe  o overview  q quit")
             state = {"uv": uv, "region": region, "motor": motor.on, "status": status}
             cv2.imshow("Open Canvas", draw_debug(frame, det, markers, tip, lookup.painting, state))
             key = cv2.waitKey(1) & 0xFF
@@ -259,11 +332,12 @@ def main():
     finally:
         motor.off()
         link.close()
-        audio.stop()
+        if audio is not None:
+            audio.stop()
         hand.close()
         cam.release()
         cv2.destroyAllWindows()
-        if audio.underruns or audio.callback_error:
+        if audio is not None and (audio.underruns or audio.callback_error):
             print(f"[audio] underruns {audio.underruns}, callback error {audio.callback_error}")
 
 

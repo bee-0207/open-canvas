@@ -1,0 +1,32 @@
+{
+  "1": {
+    "name": "sky",
+    "sound_file": "assets/sounds/objects/wind.wav",
+    "description": "The sky. A pale, creamy beige across the top of the print, turning soft gray down near the horizon, with faint clouds on the right."
+  },
+  "2": {
+    "name": "the great wave",
+    "sound_file": "assets/sounds/objects/water.wav",
+    "description": "The great wave. It rises on the left like a huge wall of deep blue water and curls over to the right. Its white crest breaks into claw-like fingers of foam reaching toward the boats. Smaller waves roll across the bottom and the right side."
+  },
+  "3": {
+    "name": "Mount Fuji",
+    "description": "Mount Fuji, small and far away. A snow-capped cone sitting low in the center, framed under the curl of the great wave as if the wave were about to swallow it."
+  },
+  "4": {
+    "name": "boat",
+    "description": "A long, narrow wooden boat on the left, tilted steeply as it rides up the side of the great wave. The rowers are crouched low inside it."
+  },
+  "5": {
+    "name": "boat",
+    "description": "A long boat in the middle, sliding down into the trough between waves, just below Mount Fuji. Its rowers cling to their oars."
+  },
+  "6": {
+    "name": "boat",
+    "description": "A long boat at the bottom, close to the viewer, its pink-tan hull cutting through the foam. The rowers bend low, holding on."
+  },
+  "7": {
+    "name": "title panel",
+    "description": "The title panel in the top left corner. A small rectangle of Japanese text naming the print and the series, Thirty-six Views of Mount Fuji, with the artist's signature beside it."
+  }
+}

@@ -225,7 +225,7 @@ class Control:
 # ----------------------------------------------------------------------------- engine
 class AudioEngine:
     def __init__(self, content=os.path.join(REPO, "content"), sounds=os.path.join(REPO, "assets", "sounds"),
-                 root=REPO, describer=None, crop_fn=None, hover=True, verbose=True):
+                 root=REPO, describer=None, crop_fn=None, hover=True, verbose=True, voice=None):
         """
         content:   folder with regions.json (contract format, CLAUDE.md section 7)
         sounds:    folder with music/<inst>_low.wav + music/<inst>_high.wav, ui/chime.wav,
@@ -237,6 +237,8 @@ class AudioEngine:
                    None, the region's pre-rendered description is spoken instead.
         crop_fn:   optional function (u, v) -> crop_image, used to feed the describer on hover
         hover:     speak a region's description after the finger rests on it for HOVER_TIME
+        voice:     folder with overview.wav + region_<id>.wav (default: <sounds>/voice); each
+                   painting in content/library.yaml has its own
         """
         self.verbose = verbose
         self.describer = describer
@@ -281,7 +283,7 @@ class AudioEngine:
         self.chime_data = normalize(load_audio(chime_p)) if os.path.exists(chime_p) else None
         self.voice_clips = {}   # "overview" or region id -> float32 array
         for key, name in [("overview", "overview.wav")] + [(rid, f"region_{rid}.wav") for rid in self.regions]:
-            p = os.path.join(sounds, "voice", name)
+            p = os.path.join(voice or os.path.join(sounds, "voice"), name)
             if os.path.exists(p):
                 self.voice_clips[key] = normalize(load_audio(p), TARGET_RMS["voice"])
 

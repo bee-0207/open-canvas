@@ -1,0 +1,31 @@
+{
+  "1": {
+    "name": "sky",
+    "sound_file": "assets/sounds/objects/wind.wav",
+    "description": "The night sky. Deep blue and full of movement, painted in thick, swirling brushstrokes. A great spiral turns in the middle, like wind or a river of light rolling across the sky."
+  },
+  "2": {
+    "name": "hills",
+    "sound_file": "assets/sounds/objects/crickets.wav",
+    "description": "Rolling hills and mountains in dark blue. They rise gently from left to right behind the village, with a darker mountain on the far right."
+  },
+  "3": {
+    "name": "village",
+    "sound_file": "assets/sounds/objects/crickets.wav",
+    "description": "A small, quiet village at the bottom. Little houses with yellow lit windows, and a church with a tall, thin steeple pointing up into the hills."
+  },
+  "4": {
+    "name": "cypress tree",
+    "sound_file": "assets/sounds/objects/leaves.wav",
+    "gain_db": -3,
+    "description": "A tall cypress tree in the foreground on the left. Dark green and brown, it rises from the bottom of the painting almost to the top, shaped like a flickering flame."
+  },
+  "5": {
+    "name": "moon",
+    "description": "The crescent moon in the top right corner. A bright orange-yellow crescent wrapped in a large, glowing yellow halo."
+  },
+  "6": {
+    "name": "star",
+    "description": "A star. A small yellow and white light ringed by glowing circles, like a little whirlpool of light in the sky."
+  }
+}
