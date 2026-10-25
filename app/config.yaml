@@ -19,6 +19,7 @@ tuning:                 # the knobs to adjust during user testing (CLAUDE.md sec
                         # 0.5 = halfway to the next joint (landmark 7)
   smoothing: 0.5        # EMA weight of the NEW position each frame: 1 = no smoothing, lower = steadier but laggier
   edge_frames: 2        # consecutive frames in/out of the edge band before the motor switches (hysteresis)
+  welcome_idle_s: 30    # no finger on the painting this long -> the next touch plays the overview (welcome)
   hold_s: 0.30          # unused: the describe button was dropped Oct 24 (hover-to-speak instead)
   min_confidence: 0.5   # MediaPipe hand detection/tracking confidence
   off_margin: 0.02      # finger counts as on the painting up to this far outside [0, 1]
