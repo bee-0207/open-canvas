@@ -221,6 +221,7 @@ def main():
             # Button: describe after a hold of hold_s (a quick tap is ignored)
             now = time.monotonic()
             for ev in link.poll():
+                print(f"[button] {'pressed' if ev == 'B1' else 'released'}")
                 if ev == "B1":
                     press_t, fired = now, False
                 else:

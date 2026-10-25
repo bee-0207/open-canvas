@@ -28,8 +28,9 @@ Agreed API (CLAUDE.md section 7). Don't change it without the team:
 Extras outside the contract: start(), stop(), play_overview(), say(audio, sr), render(seconds).
 The button's hold timing lives in the main loop: the contract calls describe() "on hold".
 
-Hover-to-speak (team request, Oct 24): if the finger rests on one region for HOVER_TIME
-seconds, update() itself starts that region's description, with no chime. The camera
+Hover-to-speak (team request, Oct 24): if the finger rests still (within HOVER_RADIUS) on
+one region for HOVER_TIME seconds, update() itself starts that region's description, with no
+chime. Gliding across a region doesn't count: moving more than HOVER_RADIUS restarts the timer. The camera
 already tracks the finger, so this needs nothing new from the main loop; describe() on the
 button still works. Pass crop_fn=(u, v) -> crop_image to give the AI describer a crop on hover.
 
@@ -86,7 +87,8 @@ REGION_DWELL = 0.12   # finger must stay in a new region this long before its so
 LIFT_GRACE = 0.35     # MediaPipe drops frames; wait this long before treating "no finger" as lifted
 CHIME_TO_VOICE = 0.35 # gap between chime and voice; also masks the AI round trip
 AI_TIMEOUT = 8.0      # stay ducked this long waiting for an AI description, then give up
-HOVER_TIME = 2.0      # finger rests on one region this long -> its description plays
+HOVER_TIME = 2.5      # finger rests still on one region this long -> its description plays
+HOVER_RADIUS = 0.04   # "still" = within this (u, v) distance of where the rest began (~1 cm on Letter)
 HOVER_REPEAT = 20.0   # don't repeat the same region's description sooner than this
 HOVER_GAP = 0.12      # short pause so the music has ducked before the first word
 USE_CHIME = False     # chime before a button describe(); the team chose speech only
@@ -305,6 +307,7 @@ class AudioEngine:
         self._rid_now = 0                  # region directly under the finger this frame
         self._cand, self._cand_since = 0, 0.0
         self._hover_rid, self._hover_since, self._hover_fired = 0, 0.0, False
+        self._hover_uv = (0.0, 0.0)        # where the current rest began
         self._last_spoken = {}             # region id -> time its description last played
         self._now = 0.0                    # time of the last update() (same clock as `now`)
         self._overview_until = 0.0         # audio-clock time the overview ends (hover waits)
@@ -386,11 +389,15 @@ class AudioEngine:
 
     def _update_hover(self, u, v, now):
         """Hover-to-speak. Uses the debounced region (self._region), so jitter on a boundary
-        doesn't restart the timer. Returns hover progress 0..1 for HUDs (1 = spoken)."""
+        doesn't restart the timer, and the finger must also stay within HOVER_RADIUS of where
+        it stopped, so gliding through a region doesn't count. Returns hover progress 0..1
+        for HUDs (1 = spoken)."""
         if not self.hover:
             return 0.0
-        if self._region != self._hover_rid:            # moved to a new region: restart the timer
+        moved = np.hypot(u - self._hover_uv[0], v - self._hover_uv[1]) > HOVER_RADIUS
+        if self._region != self._hover_rid or moved:   # new region or finger moving: restart the timer
             self._hover_rid, self._hover_since, self._hover_fired = self._region, now, False
+            self._hover_uv = (u, v)
         if self._hover_rid == 0 or self._hover_fired:
             return 1.0 if self._hover_fired else 0.0
         progress = min((now - self._hover_since) / HOVER_TIME, 1.0)
@@ -398,7 +405,7 @@ class AudioEngine:
         if progress >= 1.0 and not recent and self.audio_time >= self._overview_until:
             self._hover_fired = True
             self._last_spoken[self._hover_rid] = now
-            self._log(f"[audio] hover {HOVER_TIME:.0f} s -> describing {self.region_name(self._hover_rid)}")
+            self._log(f"[audio] hover {HOVER_TIME:g} s -> describing {self.region_name(self._hover_rid)}")
             crop = self.crop_fn(u, v) if self.crop_fn is not None else None
             self._describe_region(self._hover_rid, crop, chime=False)
         return progress
