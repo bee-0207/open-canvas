@@ -5,7 +5,8 @@ a printed painting. Put a hand on the print: an overhead camera follows the inde
 and the part of the painting under it comes alive.
 
 - **Color becomes music.** Each color plays its own instrument (blue = harp, warm = strings,
-  pale = choir, dark = cello), higher for brighter spots, panned left and right with the finger.
+  green = woodwind, pale = choir, dark = cello), higher for brighter spots, panned left and
+  right with the finger.
 - **Objects make their own sounds.** Wind in the sky, water in the wave, crickets in the village.
 - **Edges are felt.** A small vibration motor on the fingertip buzzes when the finger crosses
   an outline between two objects.
@@ -97,12 +98,13 @@ Enable Shortcuts → Settings → Advanced → Allow Running Scripts.
 
 ## Credits
 
-- **Team:** CE (vision, integration, hardware), EE (audio engine, describe feature),
-  BME (painting content, user testing). One EE teammate did not attend.
+- **Team:** Gerson Avila (CE: vision, integration, hardware), Mauricio Barrientos (EE: audio
+  engine, describe feature, voices), Travis Kanna (BME: painting content, user testing).
+  A fourth teammate (EE) did not attend.
 - **Paintings:** The Great Wave, The Starry Night and Mondrian's 1930 Composition are public
   domain; images from Wikimedia Commons. Sunset Hills is team-made.
 - **Sounds and voices:** see [`assets/sounds/CREDITS.md`](assets/sounds/CREDITS.md)
-  (sound effects and Sunset Hills voice by ElevenLabs).
+  (sound effects, and the Sunset Hills, Great Wave and Mondrian voices, by ElevenLabs).
 - **Research the design builds on:** *Eyes-Free Art* (Rector et al., Microsoft Research, 2017)
   for layered proxemic audio; *EyeMusic* for color as instrument timbre.
 

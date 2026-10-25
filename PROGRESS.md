@@ -29,6 +29,8 @@ Times are Eastern. Each step links to the pull request that landed it on `main`.
 |---|---|
 | 06:26 | **#11** explainer and demo video (release `v1.0-demo`). |
 | 09:17 | **#12** submission slide deck. |
+| 09:43 | **#13** license, this build log, removed the unused ESP32 folder. |
+| 09:46 | **#10** Great Wave and Mondrian voices re-rendered with ElevenLabs; Sunset Hills overview re-recorded to match the button-free design. |
 
 ## Known limits
 
