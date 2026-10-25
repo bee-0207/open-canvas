@@ -1,6 +1,5 @@
 // Open Canvas firmware for the Arduino Uno R3: fingertip motor + "describe" arcade button.
-// (A teammate is building the same thing on an ESP32 in firmware/open_canvas_esp32/;
-// both speak the same protocol, so the laptop works with either.)
+// This is the board used in the demo.
 //
 // Serial protocol (CLAUDE.md section 7), 115200 baud, one ASCII command per line:
 //   laptop -> Uno:  M1 = motor on, M0 = motor off
