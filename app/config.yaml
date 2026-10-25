@@ -12,13 +12,13 @@ print:                  # the picture's size between the markers, in mm (see too
   gap_mm: 10.0
 
 serial:
-  port: null            # e.g. /dev/cu.usbserial-0001 or /dev/cu.usbmodem101; null = no ESP32 (keyboard fakes the button)
+  port: null            # e.g. /dev/cu.usbserial-0001 or /dev/cu.usbmodem101; null = no board (motor simulated)
 
 tuning:                 # the knobs to adjust during user testing (CLAUDE.md section 11)
   tip_offset: 0.0       # pull the fingertip back toward the finger pad: 0 = landmark 8 as is,
                         # 0.5 = halfway to the next joint (landmark 7)
   smoothing: 0.5        # EMA weight of the NEW position each frame: 1 = no smoothing, lower = steadier but laggier
   edge_frames: 2        # consecutive frames in/out of the edge band before the motor switches (hysteresis)
-  hold_s: 0.30          # button held this long = "describe this spot"
+  hold_s: 0.30          # unused: the describe button was dropped Oct 24 (hover-to-speak instead)
   min_confidence: 0.5   # MediaPipe hand detection/tracking confidence
   off_margin: 0.02      # finger counts as on the painting up to this far outside [0, 1]

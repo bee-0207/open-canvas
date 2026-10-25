@@ -1,9 +1,13 @@
-# Hardware build guide: fingertip motor + describe button (Arduino Uno R3)
+# Hardware build guide: fingertip motor (Arduino Uno R3)
 
 Everything needed to build and test the physical part of Open Canvas.
 
+> **Oct 24: the describe button is dropped.** Resting the finger still on a spot for ~2.5 s
+> speaks its description instead. Skip every button step (step 11, bench test 3, section 7) and
+> leave D2 unwired; the firmware sends nothing when D2 is unconnected. Motor works live.
+
 - **EE #2:** sections 1–5 (circuit, breadboard build, flashing, bench test)
-- **BME:** sections 6–7 (finger mount, button placement), plus section 5's last test
+- **BME:** section 6 (finger mount), plus section 5's last test
 
 **Board:** we're racing two boards. This guide is the **Arduino Uno R3**
 (`firmware/open_canvas_uno/`); the ESP32 version lives in `firmware/open_canvas_esp32/`.
@@ -117,7 +121,7 @@ Bench test, in order. Open the Arduino Serial Monitor at **115200** baud with **
    must stay still. If it twitches, check the 10 kΩ pull-down.
 5. **Full system** (with Gerson, on the demo Mac, Serial Monitor closed):
    `python -m app.main --serial /dev/cu.usbmodem101`. Trace an outline in the painting:
-   it should buzz at each edge, and holding the button should speak a description.
+   it should buzz at each edge, and resting the finger still ~2.5 s should speak a description.
 6. **Soak:** 5 minutes of normal use, no resets and no hot parts.
 
 ---
@@ -144,7 +148,7 @@ still see the fingertip**, and the motor's buzz is clearly felt.
 - **Check:** with the system running, rest the finger on an edge. The buzz should be obvious
   but not uncomfortable. If it's weak, report it; we can try a different motor or position.
 
-## 7. Button placement (BME)
+## 7. Button placement (BME): dropped Oct 24, skip
 
 - Fix the button so it **can't slide**: in a small box or a hole in stiff cardboard (30 mm hole),
   taped to the table.

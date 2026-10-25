@@ -31,8 +31,9 @@ those responsibilities moved to the CE).
    | Need | Go to |
    |---|---|
    | Run the whole system | `python -m app.main` (settings in `app/config.yaml`; `--serial <port>` for the Uno/ESP32) |
-   | **Build the motor + button circuit** (EE #2) | **`docs/hardware/README.md`** sections 1–5, schematic in `docs/hardware/schematic.svg` |
-   | **Finger mount + button placement** (BME) | **`docs/hardware/README.md`** sections 6–7 |
+   | **Build the motor circuit** (EE #2) | **`docs/hardware/README.md`** sections 1–5, schematic in `docs/hardware/schematic.svg` (motor works live, Oct 24) |
+   | **Finger mount** (BME) | **`docs/hardware/README.md`** section 6 |
+   | **Describe button** | **Dropped Oct 24.** Resting the finger still on a region for ~2.5 s speaks it (hover-to-speak in `app/audio/engine.py`); `d` key for testing. Leave D2 unwired. |
    | Firmware | `firmware/open_canvas_uno/` (Arduino Uno R3, flashed and tested) · `firmware/open_canvas_esp32/` (ESP32 version, in progress). Same serial protocol. |
    | Test audio without a camera | `python tools/mouse_demo.py` |
    | Test camera pieces alone | `python -m tools.test_markers`, `python -m tools.test_hand` |
@@ -52,8 +53,9 @@ fingertip, and the system responds to whatever part of the painting is under it:
   (e.g. tree → rustling leaves, field → crickets).
 - **Edges are felt, not heard**: a small vibration motor worn on the finger buzzes when the
   finger crosses an outline between objects.
-- **Ask about a spot**: pressing and holding an arcade button plays a chime, ducks the music,
-  and a voice describes the exact spot being touched (vision AI + text-to-speech).
+- **Ask about a spot**: resting the finger still on one spot for ~2.5 s ducks the music and a
+  voice describes what is being touched (vision AI + text-to-speech). Gliding doesn't trigger
+  it. (An arcade button was planned for this; dropped Oct 24.)
 - **Overview first**: before exploring, a spoken description of the whole scene gives the
   listener a mental map.
 
@@ -83,10 +85,9 @@ Open Canvas lets the user explore on their own, in any order, at their own pace.
    • edge flag              → motor on/off
      │
      ├──► Audio engine (laptop, headphones)
-     └──► Serial to ESP32 ──► motor driver ──► fingertip motor
-                     ▲
- Arcade button ──────┘  (ESP32 reports press/release over serial)
-     press-and-hold → crop around fingertip → vision AI → TTS → voice (music ducks)
+     └──► Serial to ESP32/Uno ──► motor driver ──► fingertip motor
+
+ finger rests still ~2.5 s → crop around fingertip → vision AI → TTS → voice (music ducks)
 ```
 
 ### Step details
@@ -103,7 +104,7 @@ Open Canvas lets the user explore on their own, in any order, at their own pace.
    recalibrates on its own.
 4. **Lookup**: sample the painting image, region map, and edge map at (u, v).
 5. **Output**: audio engine on the laptop, plus serial commands to the ESP32 for the motor.
-6. **Describe**: on button hold, crop around the fingertip in painting space, send it to a
+6. **Describe**: when the finger rests still on a region for ~2.5 s, crop around the fingertip in painting space, send it to a
    vision-capable AI model, speak the answer with TTS.
 
 ---
@@ -117,7 +118,7 @@ Open Canvas lets the user explore on their own, in any order, at their own pace.
 | Acer 4K Webcam for PC/Mac | Jinteng Technology | $56.37 | Overhead camera |
 | LenTok Overhead Tripod Mount (desk-clamp arm) | SmartYlife | $19.98 | Holding the camera above the print |
 | DIANN 10pcs Mini Vibration Motors (coin ERM) | GUWU | $5.99 | Fingertip haptics (spares included) |
-| EG STARTS OEM 12x 30mm Push Buttons (arcade) | EG STARTS | $11.99 | "Describe this spot" button (spares included) |
+| EG STARTS OEM 12x 30mm Push Buttons (arcade) | EG STARTS | $11.99 | "Describe this spot" button (**dropped Oct 24**) |
 | **Subtotal** | | **$94.33** | before tax/shipping |
 
 With 6.25% MA sales tax, if it was charged: about $100.23.
@@ -139,7 +140,7 @@ With 6.25% MA sales tax, if it was charged: about $100.23.
   but the rated current isn't confirmed. Measure or check before finalizing the base
   resistor. Coin motors typically draw ~60–90 mA. The thin leads break easily at the motor
   body, so add strain relief (tape or heat-shrink) where the wire meets the motor.
-- **Arcade buttons:** 30 mm buttons snap into a ~30 mm hole and have a built-in
+- **Arcade buttons (dropped Oct 24):** 30 mm buttons snap into a ~30 mm hole and have a built-in
   microswitch. Check the terminal tab size (commonly 2.8 mm or 4.8 mm) before buying crimp
   connectors. Use the **COM** and **NO** (normally open) terminals.
 - **Webcam field of view at 720p:** some 4K webcams **crop** the sensor at lower
@@ -189,7 +190,7 @@ The ESP32 GPIO can't supply motor current directly, so it switches a transistor.
 
 ### ESP32 pins (defaults for a classic ESP32 DevKit; confirm for the actual board)
 - **Motor:** GPIO 25 (output)
-- **Button:** GPIO 27 with `INPUT_PULLUP`; the button connects the pin to GND when pressed
+- **Button (dropped Oct 24, leave unwired):** GPIO 27 with `INPUT_PULLUP`; the button connects the pin to GND when pressed
   (so pressed = LOW).
 - **Avoid:** strapping pins GPIO 0, 2, 12, 15 (they affect boot), and GPIO 34–39 for the
   button (input-only, no internal pull-up).
@@ -296,12 +297,13 @@ them without telling the team.
   finger can actually land in.
 - **Serial protocol:** 115200 baud, one ASCII command per line (`\n`-terminated).
   - Laptop → ESP32: `M1` motor on, `M0` motor off
-  - ESP32 → laptop: `B1` button pressed, `B0` button released
+  - ESP32 → laptop: `B1` button pressed, `B0` button released (unused since the button was
+    dropped Oct 24; the firmware and `serial_link.py` still support it, harmlessly)
   - Send motor commands **only when the state changes**, not every frame.
 - **Audio engine API:**
   ```python
   audio.update(u, v, hsl, region_id, finger_present)  # called once per frame
-  audio.describe(crop_image)                           # on button hold
+  audio.describe(crop_image)                           # `d` key (was: button hold); hover calls it internally
   ```
 
 ---
@@ -384,7 +386,7 @@ open-canvas/
   and the motor don't jitter, but keep it light so the response stays fast.
 - **Motor chatter:** add hysteresis (require a couple of consecutive frames in or out of the
   edge band) before toggling the motor.
-- **Button debounce:** debounce in firmware (~20–30 ms) and send `B1`/`B0` only on changes.
+- **Button debounce (button dropped Oct 24):** debounce in firmware (~20–30 ms) and send `B1`/`B0` only on changes.
   "Hold" means held for ~300 ms; a quick tap can be ignored or repurposed.
 - **No finger visible:** fade object sounds out and keep only the quiet music bed; make sure
   the motor is off.
@@ -410,7 +412,7 @@ open-canvas/
 - [x] Vision pipeline: camera → homography → fingertip (u, v) (Oct 24, live on the Acer)
 - [x] Audio engine with fake inputs, then live (Oct 24, incl. hover-to-speak)
 - [x] Main loop `app/main.py` end to end, motor simulated (Oct 24)
-- [ ] Motor/button circuit built and bench-tested (`docs/hardware/README.md`); Uno firmware flashed, ESP32 in progress
+- [x] Motor circuit built and working live with the Uno (Oct 24); describe button dropped (hover-to-speak replaces it)
 - [ ] Camera mount at the computed height
 - [ ] Integration by Saturday noon; blindfolded user testing Saturday afternoon
 - [ ] Update deck and reel to Open Canvas and four-layer design; film real demo

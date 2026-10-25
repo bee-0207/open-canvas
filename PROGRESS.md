@@ -4,7 +4,10 @@
 > ESP32 firmware (`M1`/`M0`, debounced `B1`/`B0`), finger wiring + strain relief, and the
 > camera mount. See CLAUDE.md section 8.
 
-Last updated: **Sat Oct 24, 2026** (marker live test passed). Hackathon: Sat Oct 24 – Sun Oct 25.
+> **Sat Oct 24, evening:** motor works live with the Uno. **Describe button dropped**: hover-to-speak
+> (finger still ~2.5 s, PR #4) replaces it. Button code stays in firmware/`serial_link.py`, unused; D2 unwired.
+
+Last updated: **Sat Oct 24, 2026** (motor live, button dropped). Hackathon: Sat Oct 24 – Sun Oct 25.
 
 ---
 
@@ -147,7 +150,8 @@ Commit and push the four untracked files (see "Repo state"), then start **step 4
 **Saturday morning:** integrate my ESP32 + motor (ex-EE #1 work, now mine), EE #2 (audio), BME (painting + region map).
 
 **Added Sat (ex-EE #1):**
-- [ ] Motor driver circuit (transistor/driver + flyback diode, 47–100 µF cap across 3V3/GND)
+- [x] Motor driver circuit (Uno version, works live Oct 24)
+- [x] ~~Describe button~~ dropped Oct 24 (hover-to-speak instead)
 - [ ] `firmware/open_canvas_esp32/open_canvas_esp32.ino`: 115200 baud, `M1`/`M0` in, button debounced 20–30 ms, `B1`/`B0` out on change
 - [ ] Finger wiring + strain relief
 - [ ] Camera mount at the computed height (~48 cm for A3, see risks)
