@@ -13,13 +13,22 @@ Last updated: **Sat Oct 24, 2026** (motor live, button dropped). Hackathon: Sat 
 
 ## Where I stopped
 
-Steps 2 and 3 of my plan are **written and tested in software**, but **not yet tested on a
-real camera**. The markers are printed and cut out. I paused because I didn't have
-something flat and stiff to tape the stand-in painting to.
+**Sat Oct 24, night: demo build finished and on `main` (tag `v1.0-demo`).** Everything runs
+live on the demo Mac:
 
-**First thing tomorrow:** do the live marker test (section "Resume here" below).
+- Camera (Acer, `--camera 0`) → markers → fingertip → lookup → audio + motor (Uno, works live)
+- Hover-to-speak (finger still 2.5 s), welcome overview per visitor (30 s idle), music at 0.7
+- **Painting library**: Sunset Hills + Great Wave + Starry Night + Mondrian, recognized from
+  each page's own markers; `assets/print_pack.pdf`; all four pages tested on paper
+- **Mac app** `~/Applications/Open Canvas.app` (`tools/make_mac_app.py`), Siri Shortcut
+  "Start Open Canvas" runs `open -a "Open Canvas"`
+- Edge band kept at 0.02 (tested live, feels right); button dropped
 
----
+**Still open (team):** maui-i re-renders the voice clips with ElevenLabs (Sunset Hills overview
+still says "hold the button"; new paintings use the macOS voice). BME: blindfolded test,
+check traced outlines (boats, cypress), deck + reel, film the real demo.
+
+The older notes below are kept for history.
 
 ## Resume here (copy-paste)
 
