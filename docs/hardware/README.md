@@ -9,9 +9,8 @@ Everything needed to build and test the physical part of Open Canvas.
 - **EE #2:** sections 1–5 (circuit, breadboard build, flashing, bench test)
 - **BME:** section 6 (finger mount), plus section 5's last test
 
-**Board:** we're racing two boards. This guide is the **Arduino Uno R3**
-(`firmware/open_canvas_uno/`); the ESP32 version lives in `firmware/open_canvas_esp32/`.
-Both use the same serial protocol, so the laptop works with either one.
+**Board:** the demo uses an **Arduino Uno R3** (`firmware/open_canvas_uno/`). The serial
+protocol is board-agnostic, so an ESP32 running the same commands would also work.
 
 ---
 

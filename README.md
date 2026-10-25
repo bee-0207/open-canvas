@@ -93,6 +93,7 @@ Enable Shortcuts → Settings → Advanced → Allow Running Scripts.
 | `docs/hardware/` | motor circuit build guide and schematic |
 | `tools/` | print pack, markers, edge maps, voice rendering, Mac app builder, test tools |
 | `CLAUDE.md` | full project spec, team contracts and design notes |
+| `PROGRESS.md` | build log: what landed when, known limits, next ideas |
 
 ## Credits
 
@@ -104,3 +105,8 @@ Enable Shortcuts → Settings → Advanced → Allow Running Scripts.
   (sound effects and Sunset Hills voice by ElevenLabs).
 - **Research the design builds on:** *Eyes-Free Art* (Rector et al., Microsoft Research, 2017)
   for layered proxemic audio; *EyeMusic* for color as instrument timbre.
+
+## License
+
+Code is under the [MIT License](LICENSE). The public-domain paintings stay public domain;
+sounds and voices keep the terms listed in [`assets/sounds/CREDITS.md`](assets/sounds/CREDITS.md).
