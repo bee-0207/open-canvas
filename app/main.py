@@ -11,12 +11,13 @@ Per camera frame (~30 Hz):
     4. lookup.sample(u, v)      HSL color, region ID, edge flag (from content/, not the webcam)
     5. audio.update(...)        music + object sounds (EE #2's engine, agreed API)
     6. motor on/off             edge flag with hysteresis, sent to the ESP32 only on change
-    7. button held >= hold_s    audio.describe(crop around the fingertip)
-       (resting the finger on one region ~2 s also speaks it: handled inside the audio engine)
+    7. resting the finger still ~2.5 s on a region speaks it (handled inside the audio engine)
+    8. first touch after welcome_idle_s with no finger on the painting -> spoken overview,
+       so a blind visitor never needs the keyboard: they just put a hand on the painting
 
 Window keys:
-    d   describe the spot under the finger now (stands in for the arcade button)
-    o   spoken overview of the whole painting
+    d   describe the spot under the finger now
+    o   spoken overview of the whole painting (also plays on its own, see step 8)
     q   quit (also Esc)
 """
 
@@ -172,6 +173,7 @@ def main():
     press_t, fired = None, False  # arcade button state
     fps, t_prev = 0.0, time.perf_counter()
     margin = tune["off_margin"]
+    last_touch = None            # monotonic time the finger was last on the painting; None = never
     try:
         while True:
             frame = cam.read()
@@ -207,6 +209,14 @@ def main():
                 a = tune["smoothing"]
                 uv = (a * raw[0] + (1 - a) * uv[0], a * raw[1] + (1 - a) * uv[1])
 
+            # Welcome: a new visitor (first touch, or after welcome_idle_s untouched) hears the overview
+            now = time.monotonic()
+            if uv is not None:
+                if last_touch is None or now - last_touch >= tune["welcome_idle_s"]:
+                    print("[welcome] new visitor -> overview")
+                    audio.play_overview()
+                last_touch = now
+
             # Lookup -> audio + motor
             region = ""
             if uv is not None:
@@ -219,7 +229,6 @@ def main():
                 motor.off()
 
             # Button: describe after a hold of hold_s (a quick tap is ignored)
-            now = time.monotonic()
             for ev in link.poll():
                 print(f"[button] {'pressed' if ev == 'B1' else 'released'}")
                 if ev == "B1":
