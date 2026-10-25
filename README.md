@@ -28,6 +28,12 @@ works on the Sunset Hills painting, then the working prototype with a tester. Th
 rendered from code; the music is synthesized in B minor with the app's own instruments
 (harp, strings, choir, cello) and fades out before the app's spoken overview.
 
+## Slides
+
+[Slide deck (PDF)](docs/slides/Open_Canvas_DS-X_2026.pdf) ·
+[PowerPoint](docs/slides/Open_Canvas_DS-X_2026.pptx): the problem, features, tech stack,
+data and data science methods, impact, and our ethics and responsibility statement.
+
 ## Paintings
 
 | Painting | Artist | What you can touch |
