@@ -66,7 +66,7 @@ BLOCK = 512           # frames per audio callback: 10.7 ms at 48 kHz. Raise to 1
 
 # Levels (linear gain). Rough guide: 0.5 = -6 dB, 0.33 = -9.6 dB.
 MASTER = 0.9
-MUSIC_LEVEL = 1.0
+MUSIC_LEVEL = 0.7       # lowered Oct 24 (was 1.0, about -3 dB): music sat too loud under the voice and objects
 OBJECT_LEVEL = 0.9
 VOICE_LEVEL = 1.0
 CHIME_LEVEL = 0.6

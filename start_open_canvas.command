@@ -6,7 +6,9 @@
 cd "${0:A:h}"
 source .venv/bin/activate
 
-port=$(ls /dev/cu.usbmodem* /dev/cu.usbserial* 2>/dev/null | head -n 1)
+# (N) = no error if a pattern matches nothing (zsh aborts the line otherwise)
+ports=(/dev/cu.usbmodem*(N) /dev/cu.usbserial*(N))
+port=${ports[1]}
 if [[ -n "$port" ]]; then
   echo "[start] motor board on $port"
   python -m app.main --serial "$port"
